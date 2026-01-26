@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "extends": ["eslint:recommended"],
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-unused-vars": "off"
+  },
+  "ignorePatterns": ["dist", "node_modules", "**/*"]
+}

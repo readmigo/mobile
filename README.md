@@ -1,5 +1,7 @@
 # Readmigo Mobile
 
+[![CI](https://github.com/readmigo/mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/readmigo/mobile/actions/workflows/ci.yml)
+
 Cross-platform mobile application built with React Native and Expo.
 
 ## Tech Stack

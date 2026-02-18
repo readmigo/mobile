@@ -49,7 +49,7 @@ export default function TabLayout() {
         options={{
           title: t('audiobook.title'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'headphones' : 'headphones-outline'} color={color} />
+            <TabBarIcon name={focused ? 'headset' : 'headset-outline'} color={color} />
           ),
         }}
       />

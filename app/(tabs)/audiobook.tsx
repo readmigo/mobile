@@ -4,13 +4,13 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
   Image,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -56,11 +56,11 @@ function AudiobookCard({
           />
         ) : (
           <View style={[styles.audiobookCoverPlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
-            <Ionicons name="headphones" size={28} color={colors.textTertiary} />
+            <Ionicons name="headset" size={28} color={colors.textTertiary} />
           </View>
         )}
-        <View style={styles.headphonesBadgeSmall}>
-          <Ionicons name="headphones" size={8} color="#FFFFFF" />
+        <View style={styles.headsetBadgeSmall}>
+          <Ionicons name="headset" size={8} color="#FFFFFF" />
         </View>
       </View>
       <View style={styles.audiobookInfo}>
@@ -135,11 +135,11 @@ function RecentlyListenedSection({
               />
             ) : (
               <View style={[styles.recentCoverPlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
-                <Ionicons name="headphones" size={24} color={colors.textTertiary} />
+                <Ionicons name="headset" size={24} color={colors.textTertiary} />
               </View>
             )}
-            <View style={styles.headphonesBadge}>
-              <Ionicons name="headphones" size={10} color="#FFFFFF" />
+            <View style={styles.headsetBadge}>
+              <Ionicons name="headset" size={10} color="#FFFFFF" />
             </View>
             <Text style={[styles.recentTitle, { color: colors.text }]} numberOfLines={2}>
               {item.title}
@@ -285,7 +285,7 @@ export default function AudiobookScreen() {
         >
           {ListHeader}
           <View style={styles.emptyContainer}>
-            <Ionicons name="headphones" size={48} color={colors.textTertiary} />
+            <Ionicons name="headset" size={48} color={colors.textTertiary} />
             <Text style={[styles.emptyTitle, { color: colors.text }]}>
               {t('audiobook.emptyTitle')}
             </Text>
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  headphonesBadge: {
+  headsetBadge: {
     position: 'absolute',
     top: 6,
     right: 6,
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headphonesBadgeSmall: {
+  headsetBadgeSmall: {
     position: 'absolute',
     top: 4,
     right: 4,

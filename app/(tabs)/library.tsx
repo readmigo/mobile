@@ -432,15 +432,6 @@ export default function LibraryScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          {t('library.title')}
-        </Text>
-        <TouchableOpacity>
-          <Ionicons name="search" size={24} color={colors.text} />
-        </TouchableOpacity>
-      </View>
-
       {hasContent ? (
         <ScrollView
           style={styles.scrollView}

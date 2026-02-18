@@ -81,12 +81,6 @@ export default function MeScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView>
-        <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
-            {t('me.title', { defaultValue: 'Me' })}
-          </Text>
-        </View>
-
         {/* Profile Card */}
         <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
           <View style={[styles.avatar, { backgroundColor: colors.primary }]}>

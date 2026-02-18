@@ -267,12 +267,6 @@ export default function AudiobookScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          {t('audiobook.title')}
-        </Text>
-      </View>
-
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />

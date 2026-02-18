@@ -728,15 +728,6 @@ export default function DiscoverScreen() {
       {/* Search Active Mode */}
       {isSearchActive ? (
         <>
-          {/* Active Search Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={handleSearchClose} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-            <Text style={[styles.headerTitle, styles.headerTitleCompact, { color: colors.text }]}>
-              {t('discover.title')}
-            </Text>
-          </View>
           {/* Active Search Bar (real TextInput) */}
           <View style={[styles.searchContainer, { backgroundColor: colors.surfaceSecondary }]}>
             <Ionicons name="search" size={20} color={colors.textSecondary} />
@@ -770,13 +761,6 @@ export default function DiscoverScreen() {
         </>
       ) : (
         <>
-          {/* Normal Header */}
-          <View style={styles.header}>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>
-              {t('discover.title')}
-            </Text>
-          </View>
-
           {/* Fake Search Bar (button) */}
           <TouchableOpacity
             style={[styles.fakeSearchBar, { backgroundColor: colors.surfaceSecondary }]}

@@ -103,9 +103,12 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         isAuthenticated: state.isAuthenticated,
         isGuestMode: state.isGuestMode,
       }),
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
+        // Always set loading to false, whether rehydration succeeds or fails
         if (state) {
           state.isLoading = false;
+        } else {
+          useAuthStore.setState({ isLoading: false });
         }
       },
     }

@@ -18,6 +18,16 @@ export default function RootLayout() {
   const { navigationTheme, isDark } = useTheme();
   const isLoading = useAuthStore((state) => state.isLoading);
 
+  // Safety timeout: force hide splash if rehydration takes too long
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (useAuthStore.getState().isLoading) {
+        useAuthStore.setState({ isLoading: false });
+      }
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }, []);
+
   useEffect(() => {
     if (!isLoading) {
       SplashScreen.hideAsync();

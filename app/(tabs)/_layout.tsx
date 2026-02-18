@@ -31,7 +31,7 @@ export default function TabLayout() {
         options={{
           title: t('library.title'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'library' : 'library-outline'} color={color} />
+            <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
           ),
         }}
       />
@@ -49,7 +49,7 @@ export default function TabLayout() {
         options={{
           title: t('audiobook.title'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'headset' : 'headset-outline'} color={color} />
+            <TabBarIcon name={focused ? 'headphones' : 'headphones-outline'} color={color} />
           ),
         }}
       />

@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 import { FlashcardReview } from '@/features/vocabulary';
 

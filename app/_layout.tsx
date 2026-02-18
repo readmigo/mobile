@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import '@/i18n';
 import { queryClient } from '@/services/queryClient';
@@ -40,12 +41,13 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider value={navigationTheme}>
-          <BottomSheetModalProvider>
-            <StatusBar style={isDark ? 'light' : 'dark'} />
-            <Stack screenOptions={{ headerShown: false }}>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <ThemeProvider value={navigationTheme}>
+            <BottomSheetModalProvider>
+              <StatusBar style={isDark ? 'light' : 'dark'} />
+              <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(tabs)" />
               <Stack.Screen
@@ -92,9 +94,10 @@ export default function RootLayout() {
                 }}
               />
             </Stack>
-          </BottomSheetModalProvider>
-        </ThemeProvider>
-      </GestureHandlerRootView>
-    </QueryClientProvider>
+            </BottomSheetModalProvider>
+          </ThemeProvider>
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }

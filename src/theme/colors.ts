@@ -1,69 +1,78 @@
 export const colors = {
-  // Primary colors
-  primary: '#2D5A7B',
-  primaryLight: '#4A7A9B',
-  primaryDark: '#1A3A5B',
-
-  // Secondary colors
-  secondary: '#7B4A2D',
-  secondaryLight: '#9B6A4A',
-  secondaryDark: '#5B3A1A',
+  // Brand colors (aligned with iOS design spec)
+  brandPrimary: '#7C8DF5',
+  brandPrimaryDark: '#8B9BFF',
+  brandGradientStart: '#8BB9FF',
+  brandGradientMiddle: '#B9B3F5',
+  brandGradientEnd: '#F6B6E8',
 
   // Accent colors
-  accent: '#4A9B7B',
-  accentLight: '#6ABB9B',
-  accentDark: '#2A7B5B',
+  accentPurple: '#9A8CF2',
+  accentPink: '#F3A6DC',
+  accentBlue: '#A5C7FF',
+  achievementGold: '#FFD36A',
 
   // Semantic colors
-  success: '#4CAF50',
-  warning: '#FF9800',
-  error: '#F44336',
-  info: '#2196F3',
+  success: '#6ED6A8',
+  warning: '#FFC26A',
+  error: '#FF6B6B',
+  info: '#7BAAFF',
 
-  // Neutral colors
+  // Neutral
   white: '#FFFFFF',
   black: '#000000',
 
   // Gray scale
-  gray50: '#FAFAFA',
-  gray100: '#F5F5F5',
-  gray200: '#EEEEEE',
-  gray300: '#E0E0E0',
-  gray400: '#BDBDBD',
-  gray500: '#9E9E9E',
-  gray600: '#757575',
-  gray700: '#616161',
-  gray800: '#424242',
-  gray900: '#212121',
+  gray50: '#F7F8FD',
+  gray100: '#EEF0FA',
+  gray200: '#E0E0E0',
+  gray300: '#D1D1D6',
+  gray400: '#A3A6C8',
+  gray500: '#6B6F9C',
+  gray600: '#636366',
+  gray700: '#3A3A3C',
+  gray800: '#2C2C2E',
+  gray900: '#1C1C1E',
 } as const;
 
 export const lightTheme = {
   // Backgrounds
-  background: colors.white,
-  backgroundSecondary: colors.gray100,
-  surface: colors.white,
-  surfaceSecondary: colors.gray50,
+  background: '#F7F8FD',
+  backgroundSecondary: '#EEF0FA',
+  surface: '#FFFFFF',
+  surfaceSecondary: '#F7F8FD',
 
   // Text colors
-  text: colors.gray900,
-  textSecondary: colors.gray600,
-  textTertiary: colors.gray500,
-  textInverse: colors.white,
+  text: '#2D2E4A',
+  textSecondary: '#6B6F9C',
+  textTertiary: '#A3A6C8',
+  textInverse: '#FFFFFF',
 
   // Border colors
-  border: colors.gray300,
-  borderLight: colors.gray200,
+  border: '#E0E0E0',
+  borderLight: '#EEF0FA',
 
   // Primary colors
-  primary: colors.primary,
-  primaryLight: colors.primaryLight,
-  onPrimary: colors.white,
+  primary: '#7C8DF5',
+  primaryLight: '#8B9BFF',
+  onPrimary: '#FFFFFF',
+
+  // Brand gradient
+  brandGradientStart: '#8BB9FF',
+  brandGradientMiddle: '#B9B3F5',
+  brandGradientEnd: '#F6B6E8',
+
+  // Accent colors
+  accentPurple: '#9A8CF2',
+  accentPink: '#F3A6DC',
+  accentBlue: '#A5C7FF',
+  achievementGold: '#FFD36A',
 
   // Status colors
-  success: colors.success,
-  warning: colors.warning,
-  error: colors.error,
-  info: colors.info,
+  success: '#6ED6A8',
+  warning: '#FFC26A',
+  error: '#FF6B6B',
+  info: '#7BAAFF',
 
   // Overlay
   overlay: 'rgba(0, 0, 0, 0.5)',
@@ -72,31 +81,42 @@ export const lightTheme = {
 
 export const darkTheme = {
   // Backgrounds
-  background: colors.gray900,
-  backgroundSecondary: colors.gray800,
-  surface: colors.gray800,
-  surfaceSecondary: colors.gray700,
+  background: '#1C1C1E',
+  backgroundSecondary: '#2C2C2E',
+  surface: '#2C2C2E',
+  surfaceSecondary: '#3A3A3C',
 
   // Text colors
-  text: colors.white,
-  textSecondary: colors.gray400,
-  textTertiary: colors.gray500,
-  textInverse: colors.gray900,
+  text: '#F5F5F7',
+  textSecondary: '#A1A1A6',
+  textTertiary: '#636366',
+  textInverse: '#1C1C1E',
 
   // Border colors
-  border: colors.gray700,
-  borderLight: colors.gray600,
+  border: '#3A3A3C',
+  borderLight: '#2C2C2E',
 
   // Primary colors
-  primary: colors.primaryLight,
-  primaryLight: colors.primary,
-  onPrimary: colors.white,
+  primary: '#8B9BFF',
+  primaryLight: '#7C8DF5',
+  onPrimary: '#FFFFFF',
+
+  // Brand gradient
+  brandGradientStart: '#7AABFF',
+  brandGradientMiddle: '#A8A2E6',
+  brandGradientEnd: '#E5A5D7',
+
+  // Accent colors
+  accentPurple: '#ABA0FF',
+  accentPink: '#FF9ED4',
+  accentBlue: '#8DB8FF',
+  achievementGold: '#FFCC4D',
 
   // Status colors
-  success: colors.success,
-  warning: colors.warning,
-  error: colors.error,
-  info: colors.info,
+  success: '#4AD98D',
+  warning: '#FFB74D',
+  error: '#FF5E5E',
+  info: '#6B9AEF',
 
   // Overlay
   overlay: 'rgba(0, 0, 0, 0.7)',
@@ -117,6 +137,13 @@ export interface ThemeColors {
   primary: string;
   primaryLight: string;
   onPrimary: string;
+  brandGradientStart: string;
+  brandGradientMiddle: string;
+  brandGradientEnd: string;
+  accentPurple: string;
+  accentPink: string;
+  accentBlue: string;
+  achievementGold: string;
   success: string;
   warning: string;
   error: string;

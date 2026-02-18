@@ -158,7 +158,7 @@ export default function LoginScreen() {
         {/* Top section: Logo and Title */}
         <View style={styles.topSection}>
           <Animated.View style={{ transform: [{ scale: logoScale }] }}>
-            <Ionicons name="book" size={88} color="#FFFFFF" />
+            <Ionicons name="book" size={160} color="#FFFFFF" />
           </Animated.View>
           <Text style={styles.title}>Readmigo</Text>
           <Text style={styles.subtitle}>
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   buttons: {
-    gap: 12,
+    gap: 16,
   },
   button: {
     flexDirection: 'row',

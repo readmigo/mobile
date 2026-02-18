@@ -201,6 +201,13 @@ export default function AudiobookScreen() {
     [handlePlayAudiobook, colors, t],
   );
 
+  const ItemSeparator = useCallback(
+    () => (
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
+    ),
+    [colors.border],
+  );
+
   const ListHeader = (
     <>
       {/* Search Bar */}
@@ -296,6 +303,7 @@ export default function AudiobookScreen() {
           contentContainerStyle={styles.listContent}
           estimatedItemSize={100}
           ListHeaderComponent={ListHeader}
+          ItemSeparatorComponent={ItemSeparator}
           refreshControl={
             <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={colors.primary} />
           }
@@ -423,7 +431,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 10,
     borderRadius: 12,
-    marginBottom: 12,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: 16,
   },
   coverContainer: {
     position: 'relative',

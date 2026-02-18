@@ -52,9 +52,9 @@ export const lightTheme = {
   border: '#E0E0E0',
   borderLight: '#EEF0FA',
 
-  // Primary colors
-  primary: '#7C8DF5',
-  primaryLight: '#8B9BFF',
+  // Primary colors (matched to iOS AccentColor from asset catalog)
+  primary: '#A78BFA',
+  primaryLight: '#8B5CF6',
   onPrimary: '#FFFFFF',
 
   // Brand gradient
@@ -96,9 +96,9 @@ export const darkTheme = {
   border: '#3A3A3C',
   borderLight: '#2C2C2E',
 
-  // Primary colors
-  primary: '#8B9BFF',
-  primaryLight: '#7C8DF5',
+  // Primary colors (matched to iOS AccentColor from asset catalog)
+  primary: '#8B5CF6',
+  primaryLight: '#A78BFA',
   onPrimary: '#FFFFFF',
 
   // Brand gradient

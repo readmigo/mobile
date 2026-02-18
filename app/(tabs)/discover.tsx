@@ -12,14 +12,15 @@ import {
   Animated,
   FlatList,
   ScrollView,
+  RefreshControl,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
-import { useSearchBooks, useBooks, SearchBook } from '@/features/books';
+import { useSearchBooks, SearchBook } from '@/features/books';
 import type { Book } from '@/services/api/books';
 
 // --- Mock Data ---
@@ -27,43 +28,53 @@ import type { Book } from '@/services/api/books';
 const BANNERS = [
   {
     id: '1',
-    title: 'New Arrivals',
-    subtitle: 'Discover the latest additions to our library',
-    gradient: ['#4A9B7B', '#2D5A7B'],
-    icon: 'sparkles',
+    titleKey: 'editorsChoice',
+    subtitle: 'Handpicked by our editorial team',
+    bookCount: 12,
+    bgColor: '#4A9B7B',
+    icon: 'star' as const,
+    typeBadge: 'Collection',
   },
   {
     id: '2',
-    title: 'Classic Literature',
+    titleKey: 'mustReadClassics',
     subtitle: 'Timeless works that shaped the world',
-    gradient: ['#7B4A2D', '#5B3A1A'],
-    icon: 'library',
+    bookCount: 25,
+    bgColor: '#7B4A2D',
+    icon: 'library' as const,
+    typeBadge: 'Classics',
   },
   {
     id: '3',
-    title: 'AI Reading Assistant',
-    subtitle: 'Get instant explanations while you read',
-    gradient: ['#2D5A7B', '#1A3A5B'],
-    icon: 'bulb',
+    titleKey: 'bestOf2025',
+    subtitle: 'Top rated books this year',
+    bookCount: 20,
+    bgColor: '#2D5A7B',
+    icon: 'trophy' as const,
+    typeBadge: 'Annual',
   },
   {
     id: '4',
-    title: 'Free Books',
-    subtitle: 'Hundreds of public domain classics',
-    gradient: ['#4CAF50', '#2E7D32'],
-    icon: 'gift',
+    titleKey: 'beginnerFriendly',
+    subtitle: 'Perfect for new English readers',
+    bookCount: 15,
+    bgColor: '#6B4A8B',
+    icon: 'rocket' as const,
+    typeBadge: 'Beginner',
   },
 ];
 
 const CATEGORY_MENU = [
-  { key: 'fiction', label: 'Fiction', icon: 'book' as const },
-  { key: 'non-fiction', label: 'Non-Fiction', icon: 'document-text' as const },
-  { key: 'classics', label: 'Classics', icon: 'library' as const },
-  { key: 'science', label: 'Science', icon: 'flask' as const },
-  { key: 'biography', label: 'Biography', icon: 'person' as const },
-  { key: 'philosophy', label: 'Philosophy', icon: 'bulb' as const },
-  { key: 'poetry', label: 'Poetry', icon: 'musical-notes' as const },
-  { key: 'history', label: 'History', icon: 'time' as const },
+  { key: 'fiction', labelKey: 'fiction', icon: 'book' as const },
+  { key: 'non-fiction', labelKey: 'nonFiction', icon: 'document-text' as const },
+  { key: 'classics', labelKey: 'classics', icon: 'library' as const },
+  { key: 'science', labelKey: 'science', icon: 'flask' as const },
+  { key: 'biography', labelKey: 'biography', icon: 'person' as const },
+  { key: 'philosophy', labelKey: 'philosophy', icon: 'bulb' as const },
+  { key: 'poetry', labelKey: 'poetry', icon: 'musical-notes' as const },
+  { key: 'history', labelKey: 'history', icon: 'time' as const },
+  { key: 'adventure', labelKey: 'adventure', icon: 'compass' as const },
+  { key: 'romance', labelKey: 'romance', icon: 'heart' as const },
 ];
 
 const SEARCH_HISTORY = ['The Great Gatsby', 'Shakespeare', 'Science Fiction', 'Jane Austen'];
@@ -80,33 +91,32 @@ const POPULAR_SEARCHES = [
 const MOCK_BOOK_LISTS = [
   {
     id: 'list-1',
-    title: 'Must-Read Classics',
+    titleKey: 'mustReadClassics',
+    isRanked: true,
     books: [
-      { id: 'b1', title: 'Pride and Prejudice', author: 'Jane Austen', coverUrl: '', difficulty: 3, isFree: true },
-      { id: 'b2', title: '1984', author: 'George Orwell', coverUrl: '', difficulty: 2, isFree: true },
-      { id: 'b3', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', coverUrl: '', difficulty: 3, isFree: true },
-      { id: 'b4', title: 'To Kill a Mockingbird', author: 'Harper Lee', coverUrl: '', difficulty: 2, isFree: true },
-      { id: 'b5', title: 'Jane Eyre', author: 'Charlotte Bronte', coverUrl: '', difficulty: 3, isFree: true },
+      { id: 'b1', title: 'Pride and Prejudice', author: 'Jane Austen', coverUrl: '', difficulty: 3, isFree: true, wordCount: 122000, rating: 4.8, description: 'A witty exploration of love, marriage, and social class in Regency-era England.' },
+      { id: 'b2', title: '1984', author: 'George Orwell', coverUrl: '', difficulty: 2, isFree: true, wordCount: 88000, rating: 4.7, description: 'A dystopian novel set in a totalitarian society under constant surveillance.' },
+      { id: 'b3', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', coverUrl: '', difficulty: 3, isFree: true, wordCount: 47000, rating: 4.5, description: 'A tale of wealth, love, and the American Dream in the Jazz Age.' },
+      { id: 'b4', title: 'To Kill a Mockingbird', author: 'Harper Lee', coverUrl: '', difficulty: 2, isFree: true, wordCount: 100000, rating: 4.8, description: 'A story of racial injustice and childhood innocence in the American South.' },
+      { id: 'b5', title: 'Jane Eyre', author: 'Charlotte Bronte', coverUrl: '', difficulty: 3, isFree: true, wordCount: 187000, rating: 4.6, description: 'A passionate and independent heroine navigates love, morality, and self-respect.' },
     ],
   },
   {
     id: 'list-2',
-    title: 'Science & Discovery',
+    titleKey: 'scienceDiscovery',
+    isRanked: false,
     books: [
-      { id: 'b6', title: 'A Brief History of Time', author: 'Stephen Hawking', coverUrl: '', difficulty: 4, isFree: false },
-      { id: 'b7', title: 'The Origin of Species', author: 'Charles Darwin', coverUrl: '', difficulty: 4, isFree: true },
-      { id: 'b8', title: 'Cosmos', author: 'Carl Sagan', coverUrl: '', difficulty: 3, isFree: false },
-      { id: 'b9', title: 'Sapiens', author: 'Yuval Noah Harari', coverUrl: '', difficulty: 3, isFree: false },
-      { id: 'b10', title: 'The Selfish Gene', author: 'Richard Dawkins', coverUrl: '', difficulty: 4, isFree: false },
+      { id: 'b6', title: 'A Brief History of Time', author: 'Stephen Hawking', coverUrl: '', difficulty: 4, isFree: false, wordCount: 65000, rating: 4.6, description: 'An exploration of cosmology, black holes, and the nature of time.' },
+      { id: 'b7', title: 'The Origin of Species', author: 'Charles Darwin', coverUrl: '', difficulty: 4, isFree: true, wordCount: 150000, rating: 4.4, description: 'The foundational work on evolutionary biology and natural selection.' },
+      { id: 'b8', title: 'Cosmos', author: 'Carl Sagan', coverUrl: '', difficulty: 3, isFree: false, wordCount: 115000, rating: 4.7, description: 'A journey through the universe exploring science and human civilization.' },
+      { id: 'b9', title: 'Sapiens', author: 'Yuval Noah Harari', coverUrl: '', difficulty: 3, isFree: false, wordCount: 135000, rating: 4.5, description: 'A brief history of humankind from the Stone Age to the present.' },
+      { id: 'b10', title: 'The Selfish Gene', author: 'Richard Dawkins', coverUrl: '', difficulty: 4, isFree: false, wordCount: 90000, rating: 4.3, description: 'A revolutionary look at evolution from the perspective of genes.' },
     ],
   },
 ];
 
-const FEATURED_LISTS = [
-  { id: 'feat-1', title: 'Editor\'s Picks', description: 'Handpicked by our editorial team', bookCount: 12, coverColor: '#4A9B7B' },
-  { id: 'feat-2', title: 'Best of 2025', description: 'Top rated books this year', bookCount: 20, coverColor: '#7B4A2D' },
-  { id: 'feat-3', title: 'Beginner Friendly', description: 'Perfect for new English readers', bookCount: 15, coverColor: '#2D5A7B' },
-];
+// Combine all books for "All Books" section
+const ALL_BOOKS = MOCK_BOOK_LISTS.flatMap((list) => list.books);
 
 // --- Types ---
 
@@ -119,88 +129,37 @@ interface MockBook {
   coverUrl: string;
   difficulty: number;
   isFree: boolean;
+  wordCount?: number;
+  rating?: number;
+  description?: string;
 }
 
 interface BannerItem {
   id: string;
-  title: string;
+  titleKey: string;
   subtitle: string;
-  gradient: string[];
+  bookCount: number;
+  bgColor: string;
   icon: string;
+  typeBadge: string;
 }
 
-// --- BookCard Component ---
+// --- Ranking Badge Colors ---
+const RANK_COLORS = ['#FFD700', '#C0C0C0', '#CD7F32'];
 
-interface BookCardProps {
-  book: DisplayBook;
-  onPress: () => void;
-  compact?: boolean;
-}
-
-const BookCard = memo(function BookCard({ book, onPress, compact = false }: BookCardProps) {
-  const { colors } = useTheme();
-  const difficulty = 'difficulty' in book ? book.difficulty : ('difficultyScore' in book ? (book.difficultyScore ?? 0) : 0);
-  const isFree = 'isFree' in book ? book.isFree : true;
-
-  if (compact) {
-    return (
-      <TouchableOpacity style={[styles.compactBookCard, { backgroundColor: colors.surface }]} onPress={onPress}>
-        {book.coverUrl ? (
-          <Image source={{ uri: book.coverUrl }} style={styles.compactBookCover} resizeMode="cover" />
-        ) : (
-          <View style={[styles.compactBookCoverPlaceholder, { backgroundColor: colors.primary + '20' }]}>
-            <Ionicons name="book" size={20} color={colors.primary} />
-          </View>
-        )}
-        <Text style={[styles.compactBookTitle, { color: colors.text }]} numberOfLines={2}>{book.title}</Text>
-        <Text style={[styles.compactBookAuthor, { color: colors.textSecondary }]} numberOfLines={1}>
-          {'author' in book ? book.author ?? '' : ''}
-        </Text>
-      </TouchableOpacity>
-    );
-  }
-
-  return (
-    <TouchableOpacity
-      style={[styles.bookCard, { backgroundColor: colors.surface }]}
-      onPress={onPress}
-    >
-      {book.coverUrl ? (
-        <Image source={{ uri: book.coverUrl }} style={styles.bookCover} resizeMode="cover" />
-      ) : (
-        <View style={[styles.bookCoverPlaceholder, { backgroundColor: colors.primary + '20' }]}>
-          <Ionicons name="book" size={24} color={colors.primary} />
-        </View>
-      )}
-      <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={2}>{book.title}</Text>
-      <Text style={[styles.bookAuthor, { color: colors.textSecondary }]} numberOfLines={1}>
-        {'author' in book ? book.author ?? '' : ''}
-      </Text>
-      <View style={styles.bookMeta}>
-        <View style={styles.difficultyContainer}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.difficultyDot,
-                { backgroundColor: i < difficulty ? colors.primary : colors.border },
-              ]}
-            />
-          ))}
-        </View>
-        {isFree && (
-          <View style={[styles.freeBadge, { backgroundColor: colors.success + '20' }]}>
-            <Text style={[styles.freeText, { color: colors.success }]}>Free</Text>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-});
+// --- Difficulty Colors ---
+const DIFFICULTY_COLORS: Record<number, string> = {
+  1: '#6ED6A8',
+  2: '#7BAAFF',
+  3: '#FFC26A',
+  4: '#FF6B6B',
+  5: '#9A8CF2',
+};
 
 // --- Banner Carousel Component ---
 
 const BannerCarousel = memo(function BannerCarousel() {
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -209,7 +168,7 @@ const BannerCarousel = memo(function BannerCarousel() {
   const autoScrollTimer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   const BANNER_WIDTH = width - 32;
-  const BANNER_HEIGHT = 140;
+  const BANNER_HEIGHT = 150;
 
   useEffect(() => {
     autoScrollTimer.current = setInterval(() => {
@@ -238,54 +197,41 @@ const BannerCarousel = memo(function BannerCarousel() {
   };
 
   const renderBannerItem = useCallback(
-    ({ item, index }: { item: BannerItem; index: number }) => {
-      const inputRange = [
-        (index - 1) * BANNER_WIDTH,
-        index * BANNER_WIDTH,
-        (index + 1) * BANNER_WIDTH,
-      ];
-
-      const scale = scrollX.interpolate({
-        inputRange,
-        outputRange: [0.95, 1, 0.95],
-        extrapolate: 'clamp',
-      });
-
-      const opacity = scrollX.interpolate({
-        inputRange,
-        outputRange: [0.7, 1, 0.7],
-        extrapolate: 'clamp',
-      });
-
+    ({ item }: { item: BannerItem }) => {
       return (
-        <Animated.View
+        <View
           style={[
             styles.bannerItem,
             {
               width: BANNER_WIDTH,
               height: BANNER_HEIGHT,
-              transform: [{ scale }],
-              opacity,
             },
           ]}
         >
-          <View style={[styles.bannerGradient, { backgroundColor: item.gradient[0] }]}>
-            <View style={[styles.bannerCircle, styles.bannerCircle1, { backgroundColor: item.gradient[1] + '40' }]} />
-            <View style={[styles.bannerCircle, styles.bannerCircle2, { backgroundColor: item.gradient[1] + '30' }]} />
+          <View style={[styles.bannerGradient, { backgroundColor: item.bgColor }]}>
+            {/* Decorative icon */}
+            <View style={styles.bannerDecorativeIcon}>
+              <Ionicons name={item.icon as any} size={70} color="rgba(255, 255, 255, 0.12)" />
+            </View>
             <View style={styles.bannerContent}>
-              <View style={styles.bannerTextContainer}>
-                <Text style={styles.bannerTitle}>{item.title}</Text>
-                <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
+              {/* Type badge */}
+              <View style={styles.bannerTypeBadge}>
+                <Text style={styles.bannerTypeBadgeText}>{item.typeBadge}</Text>
               </View>
-              <View style={styles.bannerIconContainer}>
-                <Ionicons name={item.icon as any} size={48} color="rgba(255, 255, 255, 0.9)" />
-              </View>
+              {/* Title */}
+              <Text style={styles.bannerTitle}>{t(`discover.${item.titleKey}`)}</Text>
+              {/* Subtitle */}
+              <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
+              {/* Book count */}
+              <Text style={styles.bannerBookCount}>
+                {t('discover.heroBannerBooks', { count: item.bookCount })}
+              </Text>
             </View>
           </View>
-        </Animated.View>
+        </View>
       );
     },
-    [BANNER_WIDTH, BANNER_HEIGHT, scrollX]
+    [BANNER_WIDTH, BANNER_HEIGHT, t]
   );
 
   return (
@@ -306,32 +252,17 @@ const BannerCarousel = memo(function BannerCarousel() {
         scrollEventThrottle={16}
       />
       <View style={styles.paginationContainer}>
-        {BANNERS.map((_, index) => {
-          const inputRange = [
-            (index - 1) * BANNER_WIDTH,
-            index * BANNER_WIDTH,
-            (index + 1) * BANNER_WIDTH,
-          ];
-          const dotWidth = scrollX.interpolate({
-            inputRange,
-            outputRange: [8, 20, 8],
-            extrapolate: 'clamp',
-          });
-          const dotOpacity = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.4, 1, 0.4],
-            extrapolate: 'clamp',
-          });
-          return (
-            <Animated.View
-              key={index}
-              style={[
-                styles.paginationDot,
-                { width: dotWidth, opacity: dotOpacity, backgroundColor: colors.primary },
-              ]}
-            />
-          );
-        })}
+        {BANNERS.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.paginationDot,
+              {
+                backgroundColor: index === activeIndex ? '#FFFFFF' : 'rgba(255, 255, 255, 0.4)',
+              },
+            ]}
+          />
+        ))}
       </View>
     </View>
   );
@@ -340,6 +271,7 @@ const BannerCarousel = memo(function BannerCarousel() {
 // --- Category Menu Component ---
 
 const CategoryMenu = memo(function CategoryMenu() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
 
   const handleCategoryPress = useCallback((key: string) => {
@@ -347,23 +279,118 @@ const CategoryMenu = memo(function CategoryMenu() {
   }, []);
 
   return (
-    <View style={styles.categoryMenuContainer}>
-      <View style={styles.categoryGrid}>
-        {CATEGORY_MENU.map((cat) => (
-          <TouchableOpacity
-            key={cat.key}
-            style={styles.categoryMenuItem}
-            onPress={() => handleCategoryPress(cat.key)}
-          >
-            <View style={[styles.categoryIconCircle, { backgroundColor: colors.primary + '15' }]}>
-              <Ionicons name={cat.icon as any} size={22} color={colors.primary} />
-            </View>
-            <Text style={[styles.categoryMenuLabel, { color: colors.text }]} numberOfLines={1}>
-              {cat.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.categoryScrollContent}
+      style={styles.categoryScrollContainer}
+    >
+      {CATEGORY_MENU.map((cat) => (
+        <TouchableOpacity
+          key={cat.key}
+          style={styles.categoryMenuItem}
+          onPress={() => handleCategoryPress(cat.key)}
+        >
+          <View style={[styles.categoryIconCircle, { backgroundColor: colors.primary + '1A' }]}>
+            <Ionicons name={cat.icon as any} size={20} color={colors.primary} />
+          </View>
+          <Text style={[styles.categoryMenuLabel, { color: colors.text }]} numberOfLines={1}>
+            {t(`discover.${cat.labelKey}`)}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+});
+
+// --- Ranked Book Card (for Must-Read Classics) ---
+
+interface RankedBookCardProps {
+  book: MockBook;
+  rank: number;
+  onPress: () => void;
+}
+
+const RankedBookCard = memo(function RankedBookCard({ book, rank, onPress }: RankedBookCardProps) {
+  const { colors } = useTheme();
+  const rankColor = rank <= 3 ? RANK_COLORS[rank - 1] : colors.textTertiary;
+
+  return (
+    <TouchableOpacity style={styles.rankedBookCard} onPress={onPress}>
+      <View style={styles.rankedBookCoverContainer}>
+        {book.coverUrl ? (
+          <Image source={{ uri: book.coverUrl }} style={styles.rankedBookCover} resizeMode="cover" />
+        ) : (
+          <View style={[styles.rankedBookCoverPlaceholder, { backgroundColor: colors.primary + '20' }]}>
+            <Ionicons name="book" size={24} color={colors.primary} />
+          </View>
+        )}
+        {/* Rank overlay */}
+        <View style={[styles.rankBadge, { backgroundColor: rankColor }]}>
+          <Text style={styles.rankBadgeText}>{rank}</Text>
+        </View>
       </View>
+      <Text style={[styles.rankedBookTitle, { color: colors.text }]} numberOfLines={2}>
+        {book.title}
+      </Text>
+      <Text style={[styles.rankedBookAuthor, { color: colors.textSecondary }]} numberOfLines={1}>
+        {book.author}
+      </Text>
+    </TouchableOpacity>
+  );
+});
+
+// --- Standard Book Card (for Science & Discovery) ---
+
+interface StandardBookCardProps {
+  book: MockBook;
+  onPress: () => void;
+}
+
+const StandardBookCard = memo(function StandardBookCard({ book, onPress }: StandardBookCardProps) {
+  const { colors } = useTheme();
+
+  return (
+    <TouchableOpacity style={styles.standardBookCard} onPress={onPress}>
+      {book.coverUrl ? (
+        <Image source={{ uri: book.coverUrl }} style={styles.standardBookCover} resizeMode="cover" />
+      ) : (
+        <View style={[styles.standardBookCoverPlaceholder, { backgroundColor: colors.primary + '20' }]}>
+          <Ionicons name="book" size={24} color={colors.primary} />
+        </View>
+      )}
+      <Text style={[styles.standardBookTitle, { color: colors.text }]} numberOfLines={2}>
+        {book.title}
+      </Text>
+      <Text style={[styles.standardBookAuthor, { color: colors.textSecondary }]} numberOfLines={1}>
+        {book.author}
+      </Text>
+    </TouchableOpacity>
+  );
+});
+
+// --- Section Header ---
+
+interface SectionHeaderProps {
+  icon: string;
+  title: string;
+  onSeeAll: () => void;
+}
+
+const SectionHeader = memo(function SectionHeader({ icon, title, onSeeAll }: SectionHeaderProps) {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+
+  return (
+    <View style={styles.sectionHeader}>
+      <View style={styles.sectionHeaderLeft}>
+        <Ionicons name={icon as any} size={20} color={colors.primary} />
+        <Text style={[styles.sectionHeaderTitle, { color: colors.text }]}>{title}</Text>
+      </View>
+      <TouchableOpacity onPress={onSeeAll} style={styles.seeAllButton}>
+        <Text style={[styles.seeAllText, { color: colors.primary }]}>{t('discover.seeAll')}</Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.primary} />
+      </TouchableOpacity>
     </View>
   );
 });
@@ -372,12 +399,14 @@ const CategoryMenu = memo(function CategoryMenu() {
 
 interface BookListSectionProps {
   listId: string;
-  title: string;
+  titleKey: string;
   books: MockBook[];
+  isRanked: boolean;
 }
 
-const BookListSection = memo(function BookListSection({ listId, title, books }: BookListSectionProps) {
-  const { colors } = useTheme();
+const BookListSection = memo(function BookListSection({ listId, titleKey, books, isRanked }: BookListSectionProps) {
+  const { t } = useTranslation();
+  const icon = isRanked ? 'trophy' : 'flask';
 
   const handleSeeAll = useCallback(() => {
     router.push(`/book-list/${listId}` as any);
@@ -389,59 +418,134 @@ const BookListSection = memo(function BookListSection({ listId, title, books }: 
 
   return (
     <View style={styles.bookListSection}>
-      <View style={styles.bookListHeader}>
-        <Text style={[styles.bookListTitle, { color: colors.text }]}>{title}</Text>
-        <TouchableOpacity onPress={handleSeeAll} style={styles.seeAllButton}>
-          <Text style={[styles.seeAllText, { color: colors.primary }]}>See All</Text>
-          <Ionicons name="chevron-forward" size={16} color={colors.primary} />
-        </TouchableOpacity>
-      </View>
+      <SectionHeader
+        icon={icon}
+        title={t(`discover.${titleKey}`)}
+        onSeeAll={handleSeeAll}
+      />
       <FlatList
         data={books}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.bookListScroll}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <BookCard book={item} onPress={() => handleBookPress(item.id)} compact />
-        )}
+        renderItem={({ item, index }) =>
+          isRanked ? (
+            <RankedBookCard
+              book={item}
+              rank={index + 1}
+              onPress={() => handleBookPress(item.id)}
+            />
+          ) : (
+            <StandardBookCard
+              book={item}
+              onPress={() => handleBookPress(item.id)}
+            />
+          )
+        }
       />
     </View>
   );
 });
 
-// --- Featured Book Lists Section ---
+// --- Book Row (for All Books vertical list) ---
 
-const FeaturedBookListsSection = memo(function FeaturedBookListsSection() {
+interface BookRowProps {
+  book: MockBook;
+  onPress: () => void;
+  showDivider: boolean;
+}
+
+const BookRow = memo(function BookRow({ book, onPress, showDivider }: BookRowProps) {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const difficultyColor = DIFFICULTY_COLORS[book.difficulty] || colors.textTertiary;
+
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.bookRow}>
+        {/* Cover */}
+        {book.coverUrl ? (
+          <Image source={{ uri: book.coverUrl }} style={styles.bookRowCover} resizeMode="cover" />
+        ) : (
+          <View style={[styles.bookRowCoverPlaceholder, { backgroundColor: colors.primary + '20' }]}>
+            <Ionicons name="book" size={20} color={colors.primary} />
+          </View>
+        )}
+        {/* Info */}
+        <View style={styles.bookRowInfo}>
+          <Text style={[styles.bookRowTitle, { color: colors.text }]} numberOfLines={2}>
+            {book.title}
+          </Text>
+          <Text style={[styles.bookRowAuthor, { color: colors.textSecondary }]} numberOfLines={1}>
+            {book.author}
+          </Text>
+          {book.description ? (
+            <Text
+              style={[styles.bookRowDescription, { color: colors.textSecondary }]}
+              numberOfLines={2}
+            >
+              {book.description}
+            </Text>
+          ) : null}
+          {/* Metadata row */}
+          <View style={styles.bookRowMeta}>
+            {book.wordCount ? (
+              <View style={styles.bookRowMetaItem}>
+                <Ionicons name="document-text-outline" size={12} color={colors.textTertiary} />
+                <Text style={[styles.bookRowMetaText, { color: colors.textTertiary }]}>
+                  {t('discover.words', { count: Math.round(book.wordCount / 1000) + 'k' })}
+                </Text>
+              </View>
+            ) : null}
+            {book.rating ? (
+              <View style={styles.bookRowMetaItem}>
+                <Ionicons name="star" size={12} color="#FFA500" />
+                <Text style={[styles.bookRowMetaText, { color: colors.textTertiary }]}>
+                  {book.rating}
+                </Text>
+              </View>
+            ) : null}
+            <View style={styles.bookRowMetaItem}>
+              <View style={[styles.difficultyDot, { backgroundColor: difficultyColor }]} />
+            </View>
+          </View>
+        </View>
+      </View>
+      {showDivider && (
+        <View style={[styles.bookRowDivider, { backgroundColor: colors.borderLight }]} />
+      )}
+    </TouchableOpacity>
+  );
+});
+
+// --- All Books Section ---
+
+const AllBooksSection = memo(function AllBooksSection() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const handleListPress = useCallback((listId: string) => {
-    router.push(`/book-list/${listId}` as any);
+  const handleBookPress = useCallback((bookId: string) => {
+    router.push(`/book/${bookId}`);
   }, []);
 
   return (
-    <View style={styles.featuredSection}>
-      <Text style={[styles.featuredSectionTitle, { color: colors.text }]}>Featured Book Lists</Text>
-      {FEATURED_LISTS.map((list) => (
-        <TouchableOpacity
-          key={list.id}
-          style={[styles.featuredCard, { backgroundColor: colors.surface }]}
-          onPress={() => handleListPress(list.id)}
-        >
-          <View style={[styles.featuredCover, { backgroundColor: list.coverColor }]}>
-            <Ionicons name="library" size={24} color="rgba(255,255,255,0.9)" />
-          </View>
-          <View style={styles.featuredInfo}>
-            <Text style={[styles.featuredTitle, { color: colors.text }]}>{list.title}</Text>
-            <Text style={[styles.featuredDescription, { color: colors.textSecondary }]} numberOfLines={1}>
-              {list.description}
-            </Text>
-            <Text style={[styles.featuredCount, { color: colors.textTertiary }]}>
-              {list.bookCount} books
-            </Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
-        </TouchableOpacity>
+    <View style={styles.allBooksSection}>
+      {/* Section header with divider */}
+      <View style={styles.allBooksSectionHeader}>
+        <Text style={[styles.allBooksSectionTitle, { color: colors.text }]}>
+          {t('discover.allBooks')}
+        </Text>
+        <View style={[styles.allBooksDivider, { backgroundColor: colors.borderLight }]} />
+      </View>
+      {/* Book rows */}
+      {ALL_BOOKS.map((book, index) => (
+        <BookRow
+          key={book.id}
+          book={book}
+          onPress={() => handleBookPress(book.id)}
+          showDivider={index < ALL_BOOKS.length - 1}
+        />
       ))}
     </View>
   );
@@ -592,13 +696,16 @@ const SearchPage = memo(function SearchPage({ query, onChangeQuery, onClose }: S
 // --- Main Screen ---
 
 export default function DiscoverScreen() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const inputRef = useRef<TextInput>(null);
 
-  const handleSearchFocus = useCallback(() => {
+  const handleSearchBarPress = useCallback(() => {
     setIsSearchActive(true);
+    setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
 
   const handleSearchClose = useCallback(() => {
@@ -611,81 +718,109 @@ export default function DiscoverScreen() {
     setSearchQuery('');
   }, []);
 
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, []);
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        {isSearchActive ? (
-          <TouchableOpacity onPress={handleSearchClose} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </TouchableOpacity>
-        ) : null}
-        <Text style={[styles.headerTitle, { color: colors.text }, isSearchActive && styles.headerTitleCompact]}>
-          Discover
-        </Text>
-      </View>
-
-      {/* Search Bar */}
-      <View style={[styles.searchContainer, { backgroundColor: colors.surfaceSecondary }]}>
-        <Ionicons name="search" size={20} color={colors.textSecondary} />
-        <TextInput
-          ref={inputRef}
-          style={[styles.searchInput, { color: colors.text }]}
-          placeholder="Search books, authors..."
-          placeholderTextColor={colors.textTertiary}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onFocus={handleSearchFocus}
-          autoCapitalize="none"
-          autoCorrect={false}
-          returnKeyType="search"
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={handleClearSearch}>
-            <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
-          </TouchableOpacity>
-        )}
-        {isSearchActive && searchQuery.length === 0 && (
-          <TouchableOpacity onPress={handleSearchClose}>
-            <Text style={[styles.cancelText, { color: colors.primary }]}>Cancel</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Search Page or Main Content */}
+      {/* Search Active Mode */}
       {isSearchActive ? (
-        <SearchPage
-          query={searchQuery}
-          onChangeQuery={setSearchQuery}
-          onClose={handleSearchClose}
-        />
-      ) : (
-        <ScrollView
-          style={styles.mainScroll}
-          contentContainerStyle={styles.mainScrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Hero Banner */}
-          <BannerCarousel />
-
-          {/* Category Menu */}
-          <CategoryMenu />
-
-          {/* Book Lists */}
-          {MOCK_BOOK_LISTS.map((list) => (
-            <BookListSection
-              key={list.id}
-              listId={list.id}
-              title={list.title}
-              books={list.books}
+        <>
+          {/* Active Search Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={handleSearchClose} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, styles.headerTitleCompact, { color: colors.text }]}>
+              {t('discover.title')}
+            </Text>
+          </View>
+          {/* Active Search Bar (real TextInput) */}
+          <View style={[styles.searchContainer, { backgroundColor: colors.surfaceSecondary }]}>
+            <Ionicons name="search" size={20} color={colors.textSecondary} />
+            <TextInput
+              ref={inputRef}
+              style={[styles.searchInput, { color: colors.text }]}
+              placeholder={t('discover.searchPlaceholder')}
+              placeholderTextColor={colors.textTertiary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
             />
-          ))}
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={handleClearSearch}>
+                <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
+              </TouchableOpacity>
+            )}
+            {searchQuery.length === 0 && (
+              <TouchableOpacity onPress={handleSearchClose}>
+                <Text style={[styles.cancelText, { color: colors.primary }]}>{t('common.cancel')}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <SearchPage
+            query={searchQuery}
+            onChangeQuery={setSearchQuery}
+            onClose={handleSearchClose}
+          />
+        </>
+      ) : (
+        <>
+          {/* Normal Header */}
+          <View style={styles.header}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              {t('discover.title')}
+            </Text>
+          </View>
 
-          {/* Featured Book Lists */}
-          <FeaturedBookListsSection />
+          {/* Fake Search Bar (button) */}
+          <TouchableOpacity
+            style={[styles.fakeSearchBar, { backgroundColor: colors.surfaceSecondary }]}
+            onPress={handleSearchBarPress}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="search" size={20} color={colors.textSecondary} />
+            <Text style={[styles.fakeSearchBarText, { color: colors.textTertiary }]}>
+              {t('discover.searchPlaceholder')}
+            </Text>
+          </TouchableOpacity>
 
-          <View style={styles.bottomSpacer} />
-        </ScrollView>
+          {/* Main Content */}
+          <ScrollView
+            style={styles.mainScroll}
+            contentContainerStyle={styles.mainScrollContent}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} />
+            }
+          >
+            {/* Hero Banner */}
+            <BannerCarousel />
+
+            {/* Category Menu */}
+            <CategoryMenu />
+
+            {/* Book Lists */}
+            {MOCK_BOOK_LISTS.map((list) => (
+              <BookListSection
+                key={list.id}
+                listId={list.id}
+                titleKey={list.titleKey}
+                books={list.books}
+                isRanked={list.isRanked}
+              />
+            ))}
+
+            {/* All Books Section */}
+            <AllBooksSection />
+
+            <View style={styles.bottomSpacer} />
+          </ScrollView>
+        </>
       )}
     </SafeAreaView>
   );
@@ -713,14 +848,28 @@ const styles = StyleSheet.create({
   backButton: {
     marginRight: 12,
   },
-  // Search bar
+  // Fake search bar (button)
+  fakeSearchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    gap: 8,
+    marginBottom: 8,
+  },
+  fakeSearchBarText: {
+    fontSize: 16,
+  },
+  // Active search bar
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 16,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 12,
     gap: 8,
     marginBottom: 8,
   },
@@ -750,105 +899,105 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   bannerItem: {
-    borderRadius: 16,
+    borderRadius: 12,
     overflow: 'hidden',
   },
   bannerGradient: {
     flex: 1,
-    borderRadius: 16,
+    borderRadius: 12,
     overflow: 'hidden',
     position: 'relative',
   },
-  bannerCircle: {
+  bannerDecorativeIcon: {
     position: 'absolute',
-    borderRadius: 100,
-  },
-  bannerCircle1: {
-    width: 150,
-    height: 150,
-    top: -40,
-    right: -30,
-  },
-  bannerCircle2: {
-    width: 100,
-    height: 100,
-    bottom: -30,
-    left: -20,
+    right: 16,
+    top: '50%',
+    marginTop: -35,
   },
   bannerContent: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
+    padding: 16,
+    justifyContent: 'center',
   },
-  bannerTextContainer: {
-    flex: 1,
+  bannerTypeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginBottom: 8,
+  },
+  bannerTypeBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   bannerTitle: {
     fontSize: 20,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   bannerSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: 'rgba(255, 255, 255, 0.85)',
-    lineHeight: 20,
+    marginBottom: 4,
   },
-  bannerIconContainer: {
-    marginLeft: 16,
-    opacity: 0.9,
+  bannerBookCount: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.75)',
   },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: 10,
     gap: 6,
   },
   paginationDot: {
-    height: 8,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   // Category Menu
-  categoryMenuContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+  categoryScrollContainer: {
+    marginBottom: 8,
   },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  categoryScrollContent: {
+    paddingHorizontal: 16,
+    gap: 12,
   },
   categoryMenuItem: {
-    width: '25%',
+    width: 64,
     alignItems: 'center',
-    marginBottom: 16,
   },
   categoryIconCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 6,
   },
   categoryMenuLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
     textAlign: 'center',
   },
-  // Book List Section
-  bookListSection: {
-    marginBottom: 24,
-  },
-  bookListHeader: {
+  // Section Header
+  sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     marginBottom: 12,
   },
-  bookListTitle: {
+  sectionHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  sectionHeaderTitle: {
     fontSize: 18,
     fontWeight: '700',
   },
@@ -861,78 +1010,174 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
+  // Book List Section
+  bookListSection: {
+    marginBottom: 24,
+  },
   bookListScroll: {
-    paddingHorizontal: 12,
-    gap: 8,
+    paddingHorizontal: 16,
+    gap: 12,
   },
-  // Compact Book Card (for horizontal scroll)
-  compactBookCard: {
+  // Ranked Book Card
+  rankedBookCard: {
     width: 120,
-    marginHorizontal: 4,
-    padding: 8,
-    borderRadius: 10,
   },
-  compactBookCover: {
-    width: '100%',
-    aspectRatio: 0.7,
-    borderRadius: 6,
-    marginBottom: 6,
+  rankedBookCoverContainer: {
+    position: 'relative',
+    marginBottom: 8,
   },
-  compactBookCoverPlaceholder: {
-    width: '100%',
-    aspectRatio: 0.7,
-    borderRadius: 6,
+  rankedBookCover: {
+    width: 100,
+    height: 150,
+    borderRadius: 8,
+  },
+  rankedBookCoverPlaceholder: {
+    width: 100,
+    height: 150,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 6,
   },
-  compactBookTitle: {
+  rankBadge: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rankBadgeText: {
     fontSize: 12,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  rankedBookTitle: {
+    fontSize: 13,
     fontWeight: '600',
     marginBottom: 2,
+    width: 100,
   },
-  compactBookAuthor: {
-    fontSize: 10,
+  rankedBookAuthor: {
+    fontSize: 11,
+    width: 100,
   },
-  // Featured Section
-  featuredSection: {
+  // Standard Book Card
+  standardBookCard: {
+    width: 120,
+  },
+  standardBookCover: {
+    width: 100,
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  standardBookCoverPlaceholder: {
+    width: 100,
+    height: 150,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  standardBookTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 2,
+    width: 100,
+  },
+  standardBookAuthor: {
+    fontSize: 11,
+    width: 100,
+  },
+  // All Books Section
+  allBooksSection: {
     paddingHorizontal: 16,
     marginTop: 8,
   },
-  featuredSectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+  allBooksSectionHeader: {
     marginBottom: 12,
   },
-  featuredCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 10,
+  allBooksSectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 8,
   },
-  featuredCover: {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
+  allBooksDivider: {
+    height: StyleSheet.hairlineWidth,
+  },
+  // Book Row
+  bookRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    gap: 12,
+  },
+  bookRowCover: {
+    width: 70,
+    height: 105,
+    borderRadius: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  bookRowCoverPlaceholder: {
+    width: 70,
+    height: 105,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
-  featuredInfo: {
+  bookRowInfo: {
     flex: 1,
+    paddingTop: 2,
   },
-  featuredTitle: {
+  bookRowTitle: {
     fontSize: 15,
     fontWeight: '600',
-    marginBottom: 2,
+    marginBottom: 4,
   },
-  featuredDescription: {
-    fontSize: 13,
-    marginBottom: 2,
-  },
-  featuredCount: {
+  bookRowAuthor: {
     fontSize: 12,
+    marginBottom: 4,
+  },
+  bookRowDescription: {
+    fontSize: 12,
+    opacity: 0.8,
+    lineHeight: 16,
+    marginBottom: 8,
+  },
+  bookRowMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  bookRowMetaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  bookRowMetaText: {
+    fontSize: 11,
+  },
+  difficultyDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  bookRowDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: 82,
   },
   // Search Page
   searchPage: {
@@ -1011,59 +1256,6 @@ const styles = StyleSheet.create({
   },
   searchResultAuthor: {
     fontSize: 13,
-  },
-  // Standard book card
-  bookCard: {
-    flex: 1,
-    margin: 4,
-    padding: 12,
-    borderRadius: 12,
-  },
-  bookCover: {
-    width: '100%',
-    aspectRatio: 0.7,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  bookCoverPlaceholder: {
-    width: '100%',
-    aspectRatio: 0.7,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  bookTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  bookAuthor: {
-    fontSize: 12,
-    marginBottom: 8,
-  },
-  bookMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  difficultyContainer: {
-    flexDirection: 'row',
-    gap: 3,
-  },
-  difficultyDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  freeBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  freeText: {
-    fontSize: 10,
-    fontWeight: '600',
   },
   // Loading / Empty
   loadingContainer: {

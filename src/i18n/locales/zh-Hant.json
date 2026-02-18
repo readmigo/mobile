@@ -33,7 +33,7 @@
     "privacyPolicy": "隱私權政策"
   },
   "library": {
-    "title": "我的書架",
+    "title": "書架",
     "empty": "書架是空的",
     "emptyDescription": "探索書籍，開始您的閱讀之旅",
     "discoverBooks": "探索書籍",
@@ -47,7 +47,7 @@
     "finished": "已讀完"
   },
   "discover": {
-    "title": "探索",
+    "title": "書城",
     "searchPlaceholder": "搜尋書籍、作者...",
     "categories": "分類",
     "all": "全部",
@@ -158,7 +158,7 @@
     "published": "出版時間"
   },
   "audiobook": {
-    "title": "有聲書",
+    "title": "聽書",
     "play": "播放",
     "pause": "暫停",
     "playing": "正在播放",

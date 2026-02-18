@@ -5,81 +5,115 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
+  useWindowDimensions,
+  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
-import { FlashList } from '@shopify/flash-list';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
+import { useBookListDetail } from '@/features/books';
+import type { BookListBook, BookListType } from '@/services/api/bookLists';
 
-// Mock data for book list detail - will be replaced with API calls
-const MOCK_LISTS: Record<string, { title: string; description: string; books: MockBook[] }> = {
-  'list-1': {
-    title: 'Must-Read Classics',
-    description: 'A curated collection of timeless literary masterpieces every reader should experience.',
-    books: [
-      { id: 'b1', title: 'Pride and Prejudice', author: 'Jane Austen', coverUrl: '', difficulty: 3, isFree: true },
-      { id: 'b2', title: '1984', author: 'George Orwell', coverUrl: '', difficulty: 2, isFree: true },
-      { id: 'b3', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', coverUrl: '', difficulty: 3, isFree: true },
-      { id: 'b4', title: 'To Kill a Mockingbird', author: 'Harper Lee', coverUrl: '', difficulty: 2, isFree: true },
-      { id: 'b5', title: 'Jane Eyre', author: 'Charlotte Bronte', coverUrl: '', difficulty: 3, isFree: true },
-    ],
-  },
-  'list-2': {
-    title: 'Science & Discovery',
-    description: 'Explore the wonders of science through these enlightening reads.',
-    books: [
-      { id: 'b6', title: 'A Brief History of Time', author: 'Stephen Hawking', coverUrl: '', difficulty: 4, isFree: false },
-      { id: 'b7', title: 'The Origin of Species', author: 'Charles Darwin', coverUrl: '', difficulty: 4, isFree: true },
-      { id: 'b8', title: 'Cosmos', author: 'Carl Sagan', coverUrl: '', difficulty: 3, isFree: false },
-      { id: 'b9', title: 'Sapiens', author: 'Yuval Noah Harari', coverUrl: '', difficulty: 3, isFree: false },
-      { id: 'b10', title: 'The Selfish Gene', author: 'Richard Dawkins', coverUrl: '', difficulty: 4, isFree: false },
-    ],
-  },
-  'feat-1': {
-    title: "Editor's Picks",
-    description: 'Handpicked by our editorial team for their exceptional quality and readability.',
-    books: [
-      { id: 'b11', title: 'The Catcher in the Rye', author: 'J.D. Salinger', coverUrl: '', difficulty: 2, isFree: true },
-      { id: 'b12', title: 'Brave New World', author: 'Aldous Huxley', coverUrl: '', difficulty: 3, isFree: true },
-    ],
-  },
-  'feat-2': {
-    title: 'Best of 2025',
-    description: 'The top rated books this year as chosen by our community.',
-    books: [
-      { id: 'b13', title: 'The Midnight Library', author: 'Matt Haig', coverUrl: '', difficulty: 2, isFree: false },
-    ],
-  },
-  'feat-3': {
-    title: 'Beginner Friendly',
-    description: 'Perfect for new English readers starting their reading journey.',
-    books: [
-      { id: 'b14', title: "Charlotte's Web", author: 'E.B. White', coverUrl: '', difficulty: 1, isFree: true },
-      { id: 'b15', title: 'The Little Prince', author: 'Antoine de Saint-Exupery', coverUrl: '', difficulty: 1, isFree: true },
-    ],
-  },
+// --- Gradient colors per book list type (matching iOS) ---
+
+const LIST_TYPE_GRADIENTS: Record<string, [string, string]> = {
+  RANKING: ['#FF8C00', '#CC3333'],
+  EDITORS_PICK: ['#4A6CF7', '#8B5CF6'],
+  COLLECTION: ['#20B2AA', '#4A6CF7'],
+  UNIVERSITY: ['#4B0082', '#4A6CF7'],
+  CELEBRITY: ['#FF69B4', '#8B5CF6'],
+  ANNUAL_BEST: ['#DAA520', '#FF8C00'],
+  AI_RECOMMENDED: ['#8B5CF6', '#4A6CF7'],
+  PERSONALIZED: ['#FF69B4', '#CC3333'],
+  AI_FEATURED: ['#00CED1', '#8B5CF6'],
 };
 
-interface MockBook {
-  id: string;
-  title: string;
-  author: string;
-  coverUrl: string;
-  difficulty: number;
-  isFree: boolean;
+const LIST_TYPE_ICONS: Record<string, string> = {
+  RANKING: 'trophy',
+  EDITORS_PICK: 'star',
+  COLLECTION: 'library',
+  UNIVERSITY: 'school',
+  CELEBRITY: 'people',
+  ANNUAL_BEST: 'ribbon',
+  AI_RECOMMENDED: 'sparkles',
+  PERSONALIZED: 'heart',
+  AI_FEATURED: 'flash',
+};
+
+function getGradientColors(type?: string): [string, string] {
+  return (type && LIST_TYPE_GRADIENTS[type]) || ['#4A6CF7', '#8B5CF6'];
 }
+
+function getListIcon(type?: string): string {
+  return (type && LIST_TYPE_ICONS[type]) || 'library';
+}
+
+// --- Grid Item ---
+
+interface GridItemProps {
+  book: BookListBook;
+  itemWidth: number;
+  onPress: () => void;
+}
+
+function GridItem({ book, itemWidth, onPress }: GridItemProps) {
+  const { colors } = useTheme();
+  const coverUrl = book.coverThumbUrl || book.coverUrl;
+  const coverHeight = itemWidth * 1.5; // 2:3 aspect ratio
+
+  return (
+    <TouchableOpacity
+      style={[styles.gridItem, { width: itemWidth }]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      {coverUrl ? (
+        <Image
+          source={{ uri: coverUrl }}
+          style={[styles.gridCover, { width: itemWidth, height: coverHeight }]}
+          resizeMode="cover"
+        />
+      ) : (
+        <View
+          style={[
+            styles.gridCoverPlaceholder,
+            { width: itemWidth, height: coverHeight, backgroundColor: colors.primary + '15' },
+          ]}
+        >
+          <Ionicons name="book" size={32} color={colors.primary} />
+        </View>
+      )}
+      <Text style={[styles.gridTitle, { color: colors.text }]} numberOfLines={1}>
+        {book.title}
+      </Text>
+      <Text style={[styles.gridAuthor, { color: colors.textSecondary }]} numberOfLines={1}>
+        {book.author}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+// --- Main Screen ---
 
 export default function BookListDetailScreen() {
   const { colors } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const listData = MOCK_LISTS[id ?? ''];
+  const { data: bookList, isLoading } = useBookListDetail(id ?? '');
+  const { width } = useWindowDimensions();
+
+  const GRID_PADDING = 16;
+  const GRID_GAP = 16;
+  const itemWidth = (width - GRID_PADDING * 2 - GRID_GAP) / 2;
 
   const handleBookPress = useCallback((bookId: string) => {
     router.push(`/book/${bookId}`);
   }, []);
 
-  if (!listData) {
+  // Loading state
+  if (isLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
@@ -89,63 +123,86 @@ export default function BookListDetailScreen() {
           <Text style={[styles.headerTitle, { color: colors.text }]}>Book List</Text>
           <View style={styles.headerSpacer} />
         </View>
-        <View style={styles.emptyContainer}>
-          <Ionicons name="library-outline" size={48} color={colors.textTertiary} />
-          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Book list not found</Text>
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </SafeAreaView>
     );
   }
 
-  const renderBookItem = ({ item }: { item: MockBook }) => (
-    <TouchableOpacity
-      style={[styles.bookRow, { borderBottomColor: colors.borderLight }]}
-      onPress={() => handleBookPress(item.id)}
-    >
-      {item.coverUrl ? (
-        <Image source={{ uri: item.coverUrl }} style={styles.bookCover} resizeMode="cover" />
-      ) : (
-        <View style={[styles.bookCoverPlaceholder, { backgroundColor: colors.primary + '15' }]}>
-          <Ionicons name="book" size={20} color={colors.primary} />
+  // Not found state
+  if (!bookList) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Book List</Text>
+          <View style={styles.headerSpacer} />
         </View>
-      )}
-      <View style={styles.bookInfo}>
-        <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={2}>
-          {item.title}
-        </Text>
-        <Text style={[styles.bookAuthor, { color: colors.textSecondary }]} numberOfLines={1}>
-          {item.author}
-        </Text>
-        <View style={styles.bookMeta}>
-          <View style={styles.difficultyContainer}>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.difficultyDot,
-                  { backgroundColor: i < item.difficulty ? colors.primary : colors.border },
-                ]}
-              />
-            ))}
-          </View>
-          {item.isFree && (
-            <View style={[styles.freeBadge, { backgroundColor: colors.success + '20' }]}>
-              <Text style={[styles.freeText, { color: colors.success }]}>Free</Text>
-            </View>
-          )}
+        <View style={styles.centerContainer}>
+          <Ionicons name="library-outline" size={48} color={colors.textTertiary} />
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+            Book list not found
+          </Text>
         </View>
-      </View>
-      <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
-    </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
+
+  const gradientColors = getGradientColors(bookList.type);
+  const icon = getListIcon(bookList.type);
+  const books = bookList.books || [];
+
+  const renderGridItem = ({ item, index }: { item: BookListBook; index: number }) => (
+    <View style={index % 2 === 0 ? styles.gridItemLeft : styles.gridItemRight}>
+      <GridItem
+        book={item}
+        itemWidth={itemWidth}
+        onPress={() => handleBookPress(item.id)}
+      />
+    </View>
   );
 
   const ListHeader = () => (
-    <View style={styles.listHeaderContainer}>
-      <Text style={[styles.listDescription, { color: colors.textSecondary }]}>{listData.description}</Text>
-      <Text style={[styles.listCount, { color: colors.textTertiary }]}>
-        {listData.books.length} books
-      </Text>
-    </View>
+    <>
+      {/* Gradient Banner */}
+      <LinearGradient
+        colors={gradientColors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.banner}
+      >
+        {/* Decorative icon */}
+        <View style={styles.bannerDecorativeIcon}>
+          <Ionicons name={icon as any} size={80} color="rgba(255, 255, 255, 0.15)" />
+        </View>
+
+        {/* Content */}
+        <View style={styles.bannerTextContent}>
+          <View style={styles.bannerTypeBadge}>
+            <Text style={styles.bannerTypeBadgeText}>
+              {bookList.type?.replace(/_/g, ' ') || 'Collection'}
+            </Text>
+          </View>
+          <Text style={styles.bannerTitle} numberOfLines={2}>
+            {bookList.title}
+          </Text>
+          {bookList.subtitle ? (
+            <Text style={styles.bannerSubtitle} numberOfLines={2}>
+              {bookList.subtitle}
+            </Text>
+          ) : null}
+          <View style={styles.bannerBookCount}>
+            <Ionicons name="book" size={12} color="rgba(255, 255, 255, 0.8)" />
+            <Text style={styles.bannerBookCountText}>
+              {bookList.bookCount} books
+            </Text>
+          </View>
+        </View>
+      </LinearGradient>
+    </>
   );
 
   return (
@@ -156,18 +213,28 @@ export default function BookListDetailScreen() {
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
-          {listData.title}
+          {bookList.title}
         </Text>
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* Book List */}
-      <FlashList
-        data={listData.books}
-        renderItem={renderBookItem}
+      {/* Grid */}
+      <FlatList
+        data={books}
+        renderItem={renderGridItem}
         keyExtractor={(item) => item.id}
+        numColumns={2}
         ListHeaderComponent={ListHeader}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={styles.gridContent}
+        columnWrapperStyle={styles.gridRow}
+        ListEmptyComponent={
+          <View style={styles.centerContainer}>
+            <Ionicons name="book-outline" size={48} color={colors.textTertiary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              No books in this list yet
+            </Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
@@ -187,91 +254,109 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 17,
+    fontWeight: '600',
     flex: 1,
   },
   headerSpacer: {
     width: 36,
   },
-  listHeaderContainer: {
-    paddingBottom: 16,
+  // Banner
+  banner: {
+    height: 180,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  bannerDecorativeIcon: {
+    position: 'absolute',
+    right: 16,
+    top: '50%',
+    marginTop: -40,
+  },
+  bannerTextContent: {
+    flex: 1,
+    padding: 16,
+    justifyContent: 'flex-end',
+  },
+  bannerTypeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     marginBottom: 8,
   },
-  listDescription: {
+  bannerTypeBadgeText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.9)',
+    textTransform: 'capitalize',
+  },
+  bannerTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  bannerSubtitle: {
     fontSize: 14,
-    lineHeight: 20,
+    color: 'rgba(255, 255, 255, 0.85)',
     marginBottom: 8,
   },
-  listCount: {
-    fontSize: 13,
+  bannerBookCount: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
-  emptyContainer: {
+  bannerBookCountText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  // Grid
+  gridContent: {
+    paddingBottom: 32,
+  },
+  gridRow: {
+    paddingHorizontal: 16,
+    gap: 16,
+  },
+  gridItemLeft: {
+    flex: 1,
+  },
+  gridItemRight: {
+    flex: 1,
+  },
+  gridItem: {
+    marginTop: 16,
+  },
+  gridCover: {
+    borderRadius: 8,
+    marginBottom: 6,
+  },
+  gridCoverPlaceholder: {
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  gridTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  gridAuthor: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  // States
+  centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 12,
+    paddingVertical: 60,
   },
   emptyText: {
     fontSize: 16,
-  },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 32,
-  },
-  bookRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  bookCover: {
-    width: 48,
-    height: 68,
-    borderRadius: 6,
-    marginRight: 12,
-  },
-  bookCoverPlaceholder: {
-    width: 48,
-    height: 68,
-    borderRadius: 6,
-    marginRight: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bookInfo: {
-    flex: 1,
-  },
-  bookTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  bookAuthor: {
-    fontSize: 13,
-    marginBottom: 6,
-  },
-  bookMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  difficultyContainer: {
-    flexDirection: 'row',
-    gap: 3,
-  },
-  difficultyDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  freeBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  freeText: {
-    fontSize: 10,
-    fontWeight: '600',
   },
 });

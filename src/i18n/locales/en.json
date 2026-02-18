@@ -33,7 +33,7 @@
     "privacyPolicy": "Privacy Policy"
   },
   "library": {
-    "title": "My Library",
+    "title": "Library",
     "empty": "Your library is empty",
     "emptyDescription": "Discover books to start your reading journey",
     "discoverBooks": "Discover Books",
@@ -47,7 +47,7 @@
     "finished": "Finished"
   },
   "discover": {
-    "title": "Discover",
+    "title": "Bookstore",
     "searchPlaceholder": "Search books, authors...",
     "categories": "Categories",
     "all": "All",
@@ -158,7 +158,7 @@
     "published": "Published"
   },
   "audiobook": {
-    "title": "Audiobook",
+    "title": "Listen",
     "play": "Play",
     "pause": "Pause",
     "playing": "Now Playing",

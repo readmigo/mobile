@@ -39,6 +39,9 @@
     "progress": "已完成 {{percent}}%",
     "recentlyAdded": "最近新增",
     "currentlyReading": "正在閱讀",
+    "recentlyBrowsed": "最近瀏覽",
+    "favoriteBooks": "收藏書籍",
+    "seeAll": "查看全部",
     "finished": "已讀完"
   },
   "discover": {
@@ -71,6 +74,14 @@
     "hours": "{{count}} 小時",
     "goalCompleted": "目標完成！",
     "keepGoing": "繼續加油！"
+  },
+  "me": {
+    "title": "我的",
+    "contactUs": "聯繫我們",
+    "contactUsSection": "聯繫我們",
+    "legalSection": "法律條款",
+    "userAgreement": "使用者協議",
+    "logoutConfirm": "確定要登出嗎？"
   },
   "profile": {
     "title": "我的",
@@ -242,6 +253,13 @@
     "unauthorized": "請先登入",
     "purchaseFailed": "購買失敗，請重試",
     "downloadFailed": "下載失敗，請重試"
+  },
+  "author": {
+    "title": "作者",
+    "biography": "人物傳記",
+    "writingStyle": "寫作風格",
+    "quotes": "名言佳句",
+    "works": "作品列表"
   },
   "agora": {
     "title": "城邦",

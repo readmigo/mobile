@@ -39,6 +39,9 @@
     "progress": "{{percent}}% complete",
     "recentlyAdded": "Recently Added",
     "currentlyReading": "Currently Reading",
+    "recentlyBrowsed": "Recently Browsed",
+    "favoriteBooks": "Favorite Books",
+    "seeAll": "See All",
     "finished": "Finished"
   },
   "discover": {
@@ -72,8 +75,16 @@
     "goalCompleted": "Goal Completed!",
     "keepGoing": "Keep going!"
   },
+  "me": {
+    "title": "Me",
+    "contactUs": "Contact Us",
+    "contactUsSection": "Contact Us",
+    "legalSection": "Legal",
+    "userAgreement": "User Agreement",
+    "logoutConfirm": "Are you sure you want to log out?"
+  },
   "profile": {
-    "title": "Profile",
+    "title": "Me",
     "guestUser": "Guest User",
     "signInToSync": "Sign in to sync your data",
     "signIn": "Sign In",
@@ -242,6 +253,13 @@
     "unauthorized": "Please log in to continue",
     "purchaseFailed": "Purchase failed. Please try again.",
     "downloadFailed": "Download failed. Please try again."
+  },
+  "author": {
+    "title": "Author",
+    "biography": "Biography",
+    "writingStyle": "Writing Style",
+    "quotes": "Notable Quotes",
+    "works": "Works"
   },
   "agora": {
     "title": "Agora",

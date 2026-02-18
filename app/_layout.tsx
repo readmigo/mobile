@@ -51,6 +51,35 @@ export default function RootLayout() {
                   animation: 'fade',
                 }}
               />
+              <Stack.Screen
+                name="category/[id]"
+                options={{
+                  presentation: 'card',
+                  animation: 'slide_from_right',
+                }}
+              />
+              <Stack.Screen
+                name="book-list/[id]"
+                options={{
+                  presentation: 'card',
+                  animation: 'slide_from_right',
+                }}
+              />
+              <Stack.Screen
+                name="author/[id]"
+                options={{
+                  presentation: 'card',
+                  animation: 'slide_from_right',
+                }}
+              />
+              <Stack.Screen
+                name="audiobook-player"
+                options={{
+                  presentation: 'fullScreenModal',
+                  animation: 'fade',
+                  headerShown: false,
+                }}
+              />
             </Stack>
           </BottomSheetModalProvider>
         </ThemeProvider>

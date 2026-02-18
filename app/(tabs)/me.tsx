@@ -1,127 +1,119 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { useTranslation } from 'react-i18next';
+
+type IconName = keyof typeof Ionicons.glyphMap;
 
 type SettingItem = {
   id: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   title: string;
   subtitle?: string;
   onPress: () => void;
 };
 
-export default function ProfileScreen() {
+export default function MeScreen() {
   const { colors } = useTheme();
   const { user, isGuestMode, logout } = useAuth();
   const { themeMode, setThemeMode } = useSettingsStore();
+  const { t } = useTranslation();
+
+  const handleLogout = () => {
+    Alert.alert(
+      t('auth.logout'),
+      t('me.logoutConfirm', { defaultValue: 'Are you sure you want to log out?' }),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('auth.logout'), style: 'destructive', onPress: logout },
+      ],
+    );
+  };
+
+  const contactUsSection: SettingItem[] = [
+    {
+      id: 'contact',
+      icon: 'chatbubble-outline',
+      title: t('me.contactUs', { defaultValue: 'Contact Us' }),
+      onPress: () => {},
+    },
+  ];
+
+  const legalSection: SettingItem[] = [
+    {
+      id: 'privacy',
+      icon: 'shield-checkmark-outline',
+      title: t('profile.privacyPolicy'),
+      onPress: () => Linking.openURL('https://readmigo.app/privacy'),
+    },
+    {
+      id: 'terms',
+      icon: 'document-text-outline',
+      title: t('profile.termsOfService'),
+      onPress: () => Linking.openURL('https://readmigo.app/terms'),
+    },
+    {
+      id: 'agreement',
+      icon: 'reader-outline',
+      title: t('me.userAgreement', { defaultValue: 'User Agreement' }),
+      onPress: () => Linking.openURL('https://readmigo.app/agreement'),
+    },
+  ];
+
+  const aboutSection: SettingItem[] = [
+    {
+      id: 'about',
+      icon: 'information-circle-outline',
+      title: t('profile.about'),
+      onPress: () => {},
+    },
+  ];
 
   const settingsSections: { title: string; items: SettingItem[] }[] = [
-    {
-      title: 'Preferences',
-      items: [
-        {
-          id: 'theme',
-          icon: 'moon-outline',
-          title: 'Theme',
-          subtitle: themeMode.charAt(0).toUpperCase() + themeMode.slice(1),
-          onPress: () => {
-            const modes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system'];
-            const currentIndex = modes.indexOf(themeMode);
-            setThemeMode(modes[(currentIndex + 1) % modes.length]);
-          },
-        },
-        {
-          id: 'language',
-          icon: 'language-outline',
-          title: 'Language',
-          subtitle: 'English',
-          onPress: () => {},
-        },
-        {
-          id: 'notifications',
-          icon: 'notifications-outline',
-          title: 'Notifications',
-          onPress: () => {},
-        },
-      ],
-    },
-    {
-      title: 'Reading',
-      items: [
-        {
-          id: 'reader',
-          icon: 'text-outline',
-          title: 'Reader Settings',
-          onPress: () => {},
-        },
-        {
-          id: 'goal',
-          icon: 'flag-outline',
-          title: 'Daily Goal',
-          subtitle: '20 words/day',
-          onPress: () => {},
-        },
-      ],
-    },
-    {
-      title: 'Account',
-      items: [
-        {
-          id: 'subscription',
-          icon: 'diamond-outline',
-          title: 'Subscription',
-          subtitle: user?.subscriptionTier === 'premium' ? 'Premium' : 'Free',
-          onPress: () => {},
-        },
-        {
-          id: 'help',
-          icon: 'help-circle-outline',
-          title: 'Help & Support',
-          onPress: () => {},
-        },
-        {
-          id: 'about',
-          icon: 'information-circle-outline',
-          title: 'About',
-          onPress: () => {},
-        },
-      ],
-    },
+    { title: t('me.contactUsSection', { defaultValue: 'Contact Us' }), items: contactUsSection },
+    { title: t('me.legalSection', { defaultValue: 'Legal' }), items: legalSection },
+    { title: t('profile.about'), items: aboutSection },
   ];
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView>
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            {t('me.title', { defaultValue: 'Me' })}
+          </Text>
         </View>
 
-        {/* User Info */}
-        <View style={[styles.userCard, { backgroundColor: colors.surface }]}>
+        {/* Profile Card */}
+        <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
           <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
             <Text style={[styles.avatarText, { color: colors.onPrimary }]}>
               {isGuestMode ? 'G' : user?.displayName?.[0] || 'U'}
             </Text>
           </View>
-          <View style={styles.userInfo}>
-            <Text style={[styles.userName, { color: colors.text }]}>
-              {isGuestMode ? 'Guest User' : user?.displayName || 'User'}
+          <View style={styles.profileInfo}>
+            <Text style={[styles.profileName, { color: colors.text }]}>
+              {isGuestMode ? t('profile.guestUser') : user?.displayName || 'User'}
             </Text>
-            <Text style={[styles.userEmail, { color: colors.textSecondary }]}>
-              {isGuestMode ? 'Sign in to sync your data' : user?.email || ''}
+            <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
+              {isGuestMode ? t('profile.signInToSync') : user?.email || ''}
             </Text>
           </View>
-          {isGuestMode && (
+          {isGuestMode ? (
             <TouchableOpacity
               style={[styles.signInButton, { backgroundColor: colors.primary }]}
               onPress={() => router.push('/(auth)/login')}
             >
               <Text style={[styles.signInText, { color: colors.onPrimary }]}>
-                Sign In
+                {t('profile.signIn')}
               </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={() => {}}>
+              <Ionicons name="create-outline" size={22} color={colors.textSecondary} />
             </TouchableOpacity>
           )}
         </View>
@@ -139,7 +131,7 @@ export default function ProfileScreen() {
                   style={[
                     styles.settingItem,
                     index < section.items.length - 1 && {
-                      borderBottomWidth: 1,
+                      borderBottomWidth: StyleSheet.hairlineWidth,
                       borderBottomColor: colors.border,
                     },
                   ]}
@@ -163,15 +155,22 @@ export default function ProfileScreen() {
           </View>
         ))}
 
-        {/* Logout Button */}
+        {/* Account Section - Sign Out */}
         {!isGuestMode && (
-          <TouchableOpacity
-            style={[styles.logoutButton, { backgroundColor: colors.surface }]}
-            onPress={logout}
-          >
-            <Ionicons name="log-out-outline" size={22} color={colors.error} />
-            <Text style={[styles.logoutText, { color: colors.error }]}>Log Out</Text>
-          </TouchableOpacity>
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+              {t('profile.account')}
+            </Text>
+            <TouchableOpacity
+              style={[styles.logoutButton, { backgroundColor: colors.surface }]}
+              onPress={handleLogout}
+            >
+              <Ionicons name="log-out-outline" size={22} color={colors.error} />
+              <Text style={[styles.logoutText, { color: colors.error }]}>
+                {t('auth.logout')}
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         <View style={styles.bottomPadding} />
@@ -192,7 +191,8 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
   },
-  userCard: {
+  // Profile Card
+  profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 16,
@@ -211,15 +211,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  userInfo: {
+  profileInfo: {
     flex: 1,
     marginLeft: 12,
   },
-  userName: {
+  profileName: {
     fontSize: 18,
     fontWeight: '600',
   },
-  userEmail: {
+  profileEmail: {
     fontSize: 14,
     marginTop: 2,
   },
@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  // Sections
   section: {
     marginBottom: 24,
   },
@@ -263,6 +264,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
+  // Logout
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',

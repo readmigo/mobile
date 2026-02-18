@@ -15,6 +15,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="discover"
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
@@ -39,34 +40,25 @@ export default function TabLayout() {
         options={{
           title: t('discover.title'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'compass' : 'compass-outline'} color={color} />
+            <TabBarIcon name={focused ? 'storefront' : 'storefront-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="agora"
+        name="audiobook"
         options={{
-          title: t('agora.title'),
+          title: t('audiobook.title'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'people' : 'people-outline'} color={color} />
+            <TabBarIcon name={focused ? 'headset' : 'headset-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="learn"
+        name="me"
         options={{
-          title: t('learn.title'),
+          title: t('me.title'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'school' : 'school-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: t('profile.title'),
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+            <TabBarIcon name={focused ? 'person-circle' : 'person-circle-outline'} color={color} />
           ),
         }}
       />

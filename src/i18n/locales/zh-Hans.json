@@ -39,6 +39,9 @@
     "progress": "已完成 {{percent}}%",
     "recentlyAdded": "最近添加",
     "currentlyReading": "正在阅读",
+    "recentlyBrowsed": "最近浏览",
+    "favoriteBooks": "收藏书籍",
+    "seeAll": "查看全部",
     "finished": "已读完"
   },
   "discover": {
@@ -71,6 +74,14 @@
     "hours": "{{count}} 小时",
     "goalCompleted": "目标完成！",
     "keepGoing": "继续加油！"
+  },
+  "me": {
+    "title": "我的",
+    "contactUs": "联系我们",
+    "contactUsSection": "联系我们",
+    "legalSection": "法律条款",
+    "userAgreement": "用户协议",
+    "logoutConfirm": "确定要退出登录吗？"
   },
   "profile": {
     "title": "我的",
@@ -242,6 +253,13 @@
     "unauthorized": "请先登录",
     "purchaseFailed": "购买失败，请重试",
     "downloadFailed": "下载失败，请重试"
+  },
+  "author": {
+    "title": "作者",
+    "biography": "人物传记",
+    "writingStyle": "写作风格",
+    "quotes": "名言警句",
+    "works": "作品列表"
   },
   "agora": {
     "title": "城邦",

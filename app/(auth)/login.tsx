@@ -162,7 +162,7 @@ export default function LoginScreen() {
           </Animated.View>
           <Text style={styles.title}>Readmigo</Text>
           <Text style={styles.subtitle}>
-            Read any book. AI has your back.
+            {t('auth.tagline')}
           </Text>
         </View>
 
@@ -214,7 +214,7 @@ export default function LoginScreen() {
             >
               <Ionicons name="mail" size={20} color="#FFFFFF" />
               <Text style={styles.outlineButtonText}>
-                Sign In with Email
+                {t('auth.signInWithEmail')}
               </Text>
             </TouchableOpacity>
 
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     paddingHorizontal: 32,
-    paddingBottom: 32,
+    paddingBottom: 48,
     gap: 24,
   },
   errorContainer: {

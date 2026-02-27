@@ -77,27 +77,6 @@
     "beginnerFriendly": "入门推荐",
     "featuredLists": "精选书单"
   },
-  "learn": {
-    "title": "学习",
-    "todaysProgress": "今日进度",
-    "wordsLearned": "{{count}} 个单词",
-    "dailyGoal": "每日目标",
-    "dayStreak": "连续天数",
-    "totalWords": "总单词数",
-    "reviewFlashcards": "复习闪卡",
-    "cardsDue": "{{count}} 张待复习",
-    "wordList": "单词本",
-    "viewAllWords": "查看所有已保存单词",
-    "recentWords": "最近学习",
-    "seeAll": "查看全部",
-    "weeklyStats": "本周",
-    "monthlyStats": "本月",
-    "readingTime": "阅读时长",
-    "minutes": "{{count}} 分钟",
-    "hours": "{{count}} 小时",
-    "goalCompleted": "目标完成！",
-    "keepGoing": "继续加油！"
-  },
   "me": {
     "title": "我的",
     "contactUs": "联系我们",
@@ -217,30 +196,6 @@
     "inviteDescription": "邀请好友，获得奖励",
     "copied": "已复制到剪贴板"
   },
-  "flashcard": {
-    "title": "闪卡",
-    "front": "正面",
-    "back": "背面",
-    "showAnswer": "显示答案",
-    "again": "重来",
-    "hard": "困难",
-    "good": "良好",
-    "easy": "简单",
-    "completed": "复习完成！",
-    "cardsReviewed": "已复习 {{count}} 张卡片",
-    "nextReview": "下次复习：{{time}}"
-  },
-  "vocabulary": {
-    "title": "词汇",
-    "word": "单词",
-    "definition": "释义",
-    "example": "例句",
-    "pronunciation": "发音",
-    "addToFlashcards": "添加到闪卡",
-    "markAsKnown": "标记为已掌握",
-    "savedWords": "已保存的单词",
-    "noWords": "暂无保存的单词"
-  },
   "settings": {
     "title": "设置",
     "appearance": "外观",
@@ -270,10 +225,8 @@
     "tagline": "智能阅读，高效学习",
     "feature1Title": "AI 智能阅读",
     "feature1Description": "即时获取解释和翻译",
-    "feature2Title": "积累词汇",
-    "feature2Description": "保存单词，用闪卡复习",
-    "feature3Title": "追踪进度",
-    "feature3Description": "记录您的学习历程",
+    "feature2Title": "追踪进度",
+    "feature2Description": "记录您的学习历程",
     "getStarted": "开始使用",
     "skip": "跳过"
   },

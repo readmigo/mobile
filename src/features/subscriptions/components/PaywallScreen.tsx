@@ -18,7 +18,6 @@ import { Button } from '@/components/ui/Button';
 const FEATURES = [
   { icon: 'sparkles', title: 'AI Explanations', description: 'Get instant word and phrase explanations' },
   { icon: 'book', title: 'Unlimited Books', description: 'Access our entire library' },
-  { icon: 'flash', title: 'Flashcard Review', description: 'Smart spaced repetition learning' },
   { icon: 'headset', title: 'Audiobooks', description: 'Listen while you read' },
   { icon: 'language', title: 'Translation', description: 'Translate any text instantly' },
   { icon: 'cloud-download', title: 'Offline Mode', description: 'Read without internet' },

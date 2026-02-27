@@ -77,27 +77,6 @@
     "beginnerFriendly": "Beginner Friendly",
     "featuredLists": "Featured Lists"
   },
-  "learn": {
-    "title": "Learn",
-    "todaysProgress": "Today's Progress",
-    "wordsLearned": "{{count}} words",
-    "dailyGoal": "Daily Goal",
-    "dayStreak": "Day Streak",
-    "totalWords": "Total Words",
-    "reviewFlashcards": "Review Flashcards",
-    "cardsDue": "{{count}} cards due",
-    "wordList": "Word List",
-    "viewAllWords": "View all saved words",
-    "recentWords": "Recent Words",
-    "seeAll": "See All",
-    "weeklyStats": "This Week",
-    "monthlyStats": "This Month",
-    "readingTime": "Reading Time",
-    "minutes": "{{count}} min",
-    "hours": "{{count}} hr",
-    "goalCompleted": "Goal Completed!",
-    "keepGoing": "Keep going!"
-  },
   "me": {
     "title": "Me",
     "contactUs": "Contact Us",
@@ -217,30 +196,6 @@
     "inviteDescription": "Invite friends and earn rewards",
     "copied": "Copied to clipboard"
   },
-  "flashcard": {
-    "title": "Flashcards",
-    "front": "Front",
-    "back": "Back",
-    "showAnswer": "Show Answer",
-    "again": "Again",
-    "hard": "Hard",
-    "good": "Good",
-    "easy": "Easy",
-    "completed": "Review Complete!",
-    "cardsReviewed": "{{count}} cards reviewed",
-    "nextReview": "Next review: {{time}}"
-  },
-  "vocabulary": {
-    "title": "Vocabulary",
-    "word": "Word",
-    "definition": "Definition",
-    "example": "Example",
-    "pronunciation": "Pronunciation",
-    "addToFlashcards": "Add to Flashcards",
-    "markAsKnown": "Mark as Known",
-    "savedWords": "Saved Words",
-    "noWords": "No words saved yet"
-  },
   "settings": {
     "title": "Settings",
     "appearance": "Appearance",
@@ -270,10 +225,8 @@
     "tagline": "Read smarter, learn faster",
     "feature1Title": "AI-Powered Reading",
     "feature1Description": "Get instant explanations and translations",
-    "feature2Title": "Build Vocabulary",
-    "feature2Description": "Save words and review with flashcards",
-    "feature3Title": "Track Progress",
-    "feature3Description": "Monitor your learning journey",
+    "feature2Title": "Track Progress",
+    "feature2Description": "Monitor your learning journey",
     "getStarted": "Get Started",
     "skip": "Skip"
   },

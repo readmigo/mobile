@@ -77,27 +77,6 @@
     "beginnerFriendly": "入門推薦",
     "featuredLists": "精選書單"
   },
-  "learn": {
-    "title": "學習",
-    "todaysProgress": "今日進度",
-    "wordsLearned": "{{count}} 個單字",
-    "dailyGoal": "每日目標",
-    "dayStreak": "連續天數",
-    "totalWords": "總單字數",
-    "reviewFlashcards": "複習閃卡",
-    "cardsDue": "{{count}} 張待複習",
-    "wordList": "單字本",
-    "viewAllWords": "查看所有已儲存單字",
-    "recentWords": "最近學習",
-    "seeAll": "查看全部",
-    "weeklyStats": "本週",
-    "monthlyStats": "本月",
-    "readingTime": "閱讀時間",
-    "minutes": "{{count}} 分鐘",
-    "hours": "{{count}} 小時",
-    "goalCompleted": "目標完成！",
-    "keepGoing": "繼續加油！"
-  },
   "me": {
     "title": "我的",
     "contactUs": "聯繫我們",
@@ -217,30 +196,6 @@
     "inviteDescription": "邀請好友，獲得獎勵",
     "copied": "已複製到剪貼簿"
   },
-  "flashcard": {
-    "title": "閃卡",
-    "front": "正面",
-    "back": "背面",
-    "showAnswer": "顯示答案",
-    "again": "重來",
-    "hard": "困難",
-    "good": "良好",
-    "easy": "簡單",
-    "completed": "複習完成！",
-    "cardsReviewed": "已複習 {{count}} 張卡片",
-    "nextReview": "下次複習：{{time}}"
-  },
-  "vocabulary": {
-    "title": "詞彙",
-    "word": "單字",
-    "definition": "釋義",
-    "example": "例句",
-    "pronunciation": "發音",
-    "addToFlashcards": "新增到閃卡",
-    "markAsKnown": "標記為已掌握",
-    "savedWords": "已儲存的單字",
-    "noWords": "暫無儲存的單字"
-  },
   "settings": {
     "title": "設定",
     "appearance": "外觀",
@@ -270,10 +225,8 @@
     "tagline": "智慧閱讀，高效學習",
     "feature1Title": "AI 智慧閱讀",
     "feature1Description": "即時獲取解釋和翻譯",
-    "feature2Title": "累積詞彙",
-    "feature2Description": "儲存單字，用閃卡複習",
-    "feature3Title": "追蹤進度",
-    "feature3Description": "記錄您的學習歷程",
+    "feature2Title": "追蹤進度",
+    "feature2Description": "記錄您的學習歷程",
     "getStarted": "開始使用",
     "skip": "略過"
   },

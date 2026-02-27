@@ -86,7 +86,7 @@ const WELCOME_FEATURES = [
   {
     icon: 'trending-up-outline' as keyof typeof Ionicons.glyphMap,
     title: 'Track Your Progress',
-    description: 'Build vocabulary with smart flashcards',
+    description: 'Monitor your reading journey and growth',
   },
 ];
 

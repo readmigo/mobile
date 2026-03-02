@@ -13,7 +13,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#7C8DF5"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "locales": {
       "zh-Hans": "./locales/zh-Hans.json"
     },
@@ -68,7 +70,7 @@
     },
     "extra": {
       "apiUrl": "https://api.readmigo.app",
-      "amplitudeApiKey": "",
+      "amplitudeApiKey": "58caf24e4f3c7a767db27020d9ec386c",
       "eas": {
         "projectId": "your-eas-project-id"
       }

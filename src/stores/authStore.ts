@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { secureStorage } from './secureStorage';
+import { identifyUser, resetAmplitude } from '@/services/amplitude';
 
 export interface User {
   id: string;
@@ -51,6 +52,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           state.isAuthenticated = true;
           state.isGuestMode = false;
           state.isLoading = false;
+          identifyUser(user.id, { email: user.email, subscriptionTier: user.subscriptionTier });
         }),
 
       setTokens: (accessToken, refreshToken) =>
@@ -67,6 +69,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           state.isAuthenticated = false;
           state.isGuestMode = false;
           state.isLoading = false;
+          resetAmplitude();
         }),
 
       enterGuestMode: () =>

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SubscriptionTier, SubscriptionInfo } from '../services/revenueCat';
+import { setUserProperties } from '@/services/amplitude';
 
 interface SubscriptionState {
   tier: SubscriptionTier;
@@ -34,7 +35,8 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
     (set) => ({
       ...initialState,
 
-      setSubscriptionInfo: (info) =>
+      setSubscriptionInfo: (info) => {
+        setUserProperties({ subscriptionTier: info.tier, isPremium: info.isActive });
         set({
           tier: info.tier,
           isActive: info.isActive,
@@ -43,7 +45,8 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
           productId: info.productId,
           isLoading: false,
           lastChecked: new Date().toISOString(),
-        }),
+        });
+      },
 
       setLoading: (loading) => set({ isLoading: loading }),
 

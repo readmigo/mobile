@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { trackEvent } from '@/services/amplitude';
 import { EPUBReader } from '@/features/reader';
 import { ReaderControls } from '@/features/reader';
 import { AIExplanationPanel } from '@/features/ai';
@@ -28,6 +29,10 @@ export default function ReaderScreen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAIPanel, setShowAIPanel] = useState(false);
+
+  useEffect(() => {
+    trackEvent('reading_session_started', { book_id: bookId });
+  }, []);
 
   const readerColors = {
     light: { background: '#FFFFFF', text: '#1A1A1A' },
@@ -50,6 +55,7 @@ export default function ReaderScreen() {
   }, []);
 
   const handleClose = () => {
+    trackEvent('reading_session_ended', { book_id: bookId });
     router.back();
   };
 

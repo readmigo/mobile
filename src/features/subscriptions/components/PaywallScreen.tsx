@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
+import { trackEvent } from '@/services/amplitude';
 import { useOfferings, usePurchase, useRestorePurchases } from '../hooks/useSubscription';
 import { SubscriptionPackage } from '../services/revenueCat';
 import { Button } from '@/components/ui/Button';
@@ -30,11 +31,18 @@ export function PaywallScreen() {
   const restore = useRestorePurchases();
   const [selectedPackage, setSelectedPackage] = useState<SubscriptionPackage | null>(null);
 
+  useEffect(() => {
+    trackEvent('paywall_viewed');
+  }, []);
+
   const handlePurchase = async () => {
     if (!selectedPackage) return;
 
+    trackEvent('subscription_purchase_initiated', { packageId: selectedPackage.id });
+
     try {
       await purchase.mutateAsync(selectedPackage.product);
+      trackEvent('subscription_purchased', { packageId: selectedPackage.id });
       router.back();
     } catch (error: any) {
       if (!error.userCancelled) {
@@ -58,7 +66,13 @@ export function PaywallScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.closeBtn}>
+          <TouchableOpacity
+            onPress={() => {
+              trackEvent('paywall_dismissed');
+              router.back();
+            }}
+            style={styles.closeBtn}
+          >
             <Ionicons name="close" size={28} color={colors.text} />
           </TouchableOpacity>
         </View>

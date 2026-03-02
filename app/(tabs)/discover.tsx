@@ -20,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
+import { trackEvent } from '@/services/amplitude';
 import { useSearchBooks, useBookLists, useBooks, useCategories, SearchBook } from '@/features/books';
 import type { BookList, BookListBook, BookListType } from '@/services/api/bookLists';
 import type { Book } from '@/services/api/books';
@@ -498,6 +499,12 @@ const SearchPage = memo(function SearchPage({ query, onChangeQuery }: SearchPage
   const isSearching = deferredQuery.length > 1;
   const { data: searchResults, isLoading } = useSearchBooks(deferredQuery);
 
+  useEffect(() => {
+    if (deferredQuery.length > 1) {
+      trackEvent('search_performed', { query: deferredQuery });
+    }
+  }, [deferredQuery]);
+
   const handleBookPress = useCallback((bookId: string) => {
     router.push(`/book/${bookId}`);
   }, []);
@@ -612,6 +619,7 @@ export default function DiscoverScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const handleSearchBarPress = useCallback(() => {
+    trackEvent('search_opened');
     setIsSearchActive(true);
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);

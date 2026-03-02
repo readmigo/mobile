@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { Platform } from 'react-native';
+import * as Localization from 'expo-localization';
+import * as Device from 'expo-device';
+import Constants from 'expo-constants';
 import { secureStorage } from './secureStorage';
 import { identifyUser, resetAmplitude } from '@/services/amplitude';
 
@@ -52,7 +56,20 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           state.isAuthenticated = true;
           state.isGuestMode = false;
           state.isLoading = false;
-          identifyUser(user.id, { email: user.email, subscriptionTier: user.subscriptionTier });
+
+          const locale = Localization.getLocales()[0];
+          identifyUser(user.id, {
+            email: user.email,
+            subscription_tier: user.subscriptionTier,
+            registration_date: user.createdAt ?? null,
+            country: locale?.regionCode ?? null,
+            language: locale?.languageCode ?? null,
+            platform: Platform.OS,
+            app_version: Constants.expoConfig?.version ?? null,
+            device_model: Device.modelName ?? null,
+            os_version: String(Platform.Version),
+            last_active_date: new Date().toISOString(),
+          });
         }),
 
       setTokens: (accessToken, refreshToken) =>

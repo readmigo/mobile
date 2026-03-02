@@ -32,11 +32,23 @@ const initialState: SubscriptionState = {
 
 export const useSubscriptionStore = create<SubscriptionState & SubscriptionActions>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...initialState,
 
       setSubscriptionInfo: (info) => {
-        setUserProperties({ subscriptionTier: info.tier, isPremium: info.isActive });
+        const previous = get();
+        const nowActivating = info.isActive && !previous.isActive;
+
+        const properties: Record<string, unknown> = {
+          subscription_tier: info.tier,
+          is_premium: info.isActive,
+        };
+
+        if (nowActivating) {
+          properties.subscription_start_date = new Date().toISOString();
+        }
+
+        setUserProperties(properties);
         set({
           tier: info.tier,
           isActive: info.isActive,

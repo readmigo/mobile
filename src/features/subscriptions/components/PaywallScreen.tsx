@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
-import { trackEvent } from '@/services/amplitude';
+import { trackEvent, trackRevenue } from '@/services/amplitude';
 import { useOfferings, usePurchase, useRestorePurchases } from '../hooks/useSubscription';
 import { SubscriptionPackage } from '../services/revenueCat';
 import { Button } from '@/components/ui/Button';
@@ -43,6 +43,12 @@ export function PaywallScreen() {
     try {
       await purchase.mutateAsync(selectedPackage.product);
       trackEvent('subscription_purchased', { packageId: selectedPackage.id });
+      trackRevenue(
+        selectedPackage.product.product.identifier,
+        selectedPackage.product.product.price,
+        1,
+        'purchase'
+      );
       router.back();
     } catch (error: any) {
       if (!error.userCancelled) {
@@ -54,6 +60,8 @@ export function PaywallScreen() {
   const handleRestore = async () => {
     try {
       await restore.mutateAsync();
+      trackEvent('subscription_restored');
+      trackRevenue('restore', 0, 1, 'restore');
     } catch (error) {
       console.error('Restore failed:', error);
     }

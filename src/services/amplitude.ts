@@ -1,4 +1,4 @@
-import { init, track, identify, reset, Identify } from '@amplitude/analytics-react-native';
+import { init, track, identify, reset, Identify, Revenue, revenue as amplitudeRevenue } from '@amplitude/analytics-react-native';
 import Constants from 'expo-constants';
 
 const API_KEY = (Constants.expoConfig?.extra?.amplitudeApiKey as string | undefined) ?? '';
@@ -58,6 +58,28 @@ export function setUserProperties(properties: Record<string, unknown>): void {
   });
 
   identify(identifyObj);
+}
+
+export function trackRevenue(
+  productId: string,
+  price: number,
+  quantity: number = 1,
+  revenueType?: string
+): void {
+  if (!initialized) {
+    return;
+  }
+
+  const rev = new Revenue()
+    .setProductId(productId)
+    .setPrice(price)
+    .setQuantity(quantity);
+
+  if (revenueType) {
+    rev.setRevenueType(revenueType);
+  }
+
+  amplitudeRevenue(rev);
 }
 
 export function resetAmplitude(): void {

@@ -1,6 +1,6 @@
 {
   "common": {
-    "loading": "加载中...",
+    "loadingText": "加载中...",
     "error": "出错了",
     "retry": "重试",
     "cancel": "取消",
@@ -34,11 +34,11 @@
   },
   "library": {
     "title": "书架",
-    "empty": "书架是空的",
-    "emptyDescription": "发现书籍，开始您的阅读之旅",
+    "emptyTitle": "书架是空的",
+    "emptySubtitle": "发现书籍，开始您的阅读之旅",
     "discoverBooks": "发现书籍",
     "continueReading": "继续阅读",
-    "progress": "已完成 {{percent}}%",
+    "progress": "已完成 {{value}}%",
     "recentlyAdded": "最近添加",
     "currentlyReading": "正在阅读",
     "recentlyBrowsed": "最近浏览",
@@ -153,15 +153,17 @@
     "skipBackward": "快退 15 秒",
     "nextChapter": "下一章",
     "previousChapter": "上一章",
-    "remainingTime": "剩余 {{time}}",
+    "remainingTime": "剩余 {{duration}}",
     "recentlyListened": "最近收听",
-    "searchPlaceholder": "搜索有声书...",
+    "search": {
+      "placeholder": "搜索有声书..."
+    },
     "narratedBy": "朗读：{{name}}",
     "chaptersCount": "{{count}} 章",
     "emptyTitle": "暂无有声书",
     "emptySubtitle": "稍后再来查看可收听的有声书",
     "allLanguages": "全部",
-    "progress": "{{percent}}%"
+    "progress": "{{value}}%"
   },
   "subscription": {
     "title": "高级版",

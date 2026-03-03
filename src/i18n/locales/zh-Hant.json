@@ -1,6 +1,6 @@
 {
   "common": {
-    "loading": "載入中...",
+    "loadingText": "載入中...",
     "error": "發生錯誤",
     "retry": "重試",
     "cancel": "取消",
@@ -34,11 +34,11 @@
   },
   "library": {
     "title": "書架",
-    "empty": "書架是空的",
-    "emptyDescription": "探索書籍，開始您的閱讀之旅",
+    "emptyTitle": "書架是空的",
+    "emptySubtitle": "探索書籍，開始您的閱讀之旅",
     "discoverBooks": "探索書籍",
     "continueReading": "繼續閱讀",
-    "progress": "已完成 {{percent}}%",
+    "progress": "已完成 {{value}}%",
     "recentlyAdded": "最近新增",
     "currentlyReading": "正在閱讀",
     "recentlyBrowsed": "最近瀏覽",
@@ -153,15 +153,17 @@
     "skipBackward": "快退 15 秒",
     "nextChapter": "下一章",
     "previousChapter": "上一章",
-    "remainingTime": "剩餘 {{time}}",
+    "remainingTime": "剩餘 {{duration}}",
     "recentlyListened": "最近收聽",
-    "searchPlaceholder": "搜尋有聲書...",
+    "search": {
+      "placeholder": "搜尋有聲書..."
+    },
     "narratedBy": "朗讀：{{name}}",
     "chaptersCount": "{{count}} 章",
     "emptyTitle": "暫無有聲書",
     "emptySubtitle": "稍後再來查看可收聽的有聲書",
     "allLanguages": "全部",
-    "progress": "{{percent}}%"
+    "progress": "{{value}}%"
   },
   "subscription": {
     "title": "進階版",

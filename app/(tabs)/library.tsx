@@ -214,7 +214,7 @@ function CurrentlyReadingSection({ book }: CurrentlyReadingSectionProps) {
                 />
               </View>
               <Text style={[styles.progressText, { color: colors.textTertiary }]}>
-                {t('library.progress', { percent: Math.round(book.progress * 100) })}
+                {t('library.progress', { value: Math.round(book.progress * 100) })}
               </Text>
             </View>
             <TouchableOpacity
@@ -398,10 +398,10 @@ function EmptyLibraryState() {
     <View style={styles.emptyContainer}>
       <Ionicons name="library-outline" size={64} color={colors.textTertiary} />
       <Text style={[styles.emptyTitle, { color: colors.text }]}>
-        {t('library.empty')}
+        {t('library.emptyTitle')}
       </Text>
       <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-        {t('library.emptyDescription')}
+        {t('library.emptySubtitle')}
       </Text>
       <TouchableOpacity
         style={[styles.discoverButton, { backgroundColor: colors.primary }]}

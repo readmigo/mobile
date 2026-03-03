@@ -1,6 +1,6 @@
 {
   "common": {
-    "loading": "Loading...",
+    "loadingText": "Loading...",
     "error": "Something went wrong",
     "retry": "Retry",
     "cancel": "Cancel",
@@ -34,11 +34,11 @@
   },
   "library": {
     "title": "Library",
-    "empty": "Your library is empty",
-    "emptyDescription": "Discover books to start your reading journey",
+    "emptyTitle": "Your library is empty",
+    "emptySubtitle": "Discover books to start your reading journey",
     "discoverBooks": "Discover Books",
     "continueReading": "Continue Reading",
-    "progress": "{{percent}}% complete",
+    "progress": "{{value}}% complete",
     "recentlyAdded": "Recently Added",
     "currentlyReading": "Currently Reading",
     "recentlyBrowsed": "Recently Browsed",
@@ -153,15 +153,17 @@
     "skipBackward": "Back 15s",
     "nextChapter": "Next Chapter",
     "previousChapter": "Previous Chapter",
-    "remainingTime": "{{time}} remaining",
+    "remainingTime": "{{duration}} remaining",
     "recentlyListened": "Recently Listened",
-    "searchPlaceholder": "Search audiobooks...",
+    "search": {
+      "placeholder": "Search audiobooks..."
+    },
     "narratedBy": "Narrated by {{name}}",
     "chaptersCount": "{{count}} chapters",
     "emptyTitle": "No Audiobooks Yet",
     "emptySubtitle": "Check back later for audiobooks to listen to",
     "allLanguages": "All",
-    "progress": "{{percent}}%"
+    "progress": "{{value}}%"
   },
   "subscription": {
     "title": "Premium",

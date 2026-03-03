@@ -216,7 +216,7 @@ export default function AudiobookScreen() {
           <Ionicons name="search" size={16} color={colors.textTertiary} style={styles.searchIcon} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
-            placeholder={t('audiobook.searchPlaceholder')}
+            placeholder={t('audiobook.search.placeholder')}
             placeholderTextColor={colors.textTertiary}
             value={searchText}
             onChangeText={setSearchText}

@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
-import { trackEvent } from '@/services/amplitude';
 
 export default function BookDetailScreen() {
   const { colors } = useTheme();
@@ -13,10 +12,6 @@ export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [chaptersExpanded, setChaptersExpanded] = useState(false);
   const [inLibrary, setInLibrary] = useState(false);
-
-  useEffect(() => {
-    trackEvent('book_detail_viewed', { book_id: id });
-  }, []);
 
   // Mock book data
   const book = {
@@ -47,7 +42,6 @@ export default function BookDetailScreen() {
   };
 
   const handleStartReading = () => {
-    trackEvent('reading_started', { book_id: id });
     router.push({
       pathname: '/book/reader',
       params: { bookId: id },
@@ -276,7 +270,6 @@ export default function BookDetailScreen() {
               },
             ]}
             onPress={() => {
-              trackEvent(inLibrary ? 'library_book_removed' : 'library_book_added', { book_id: id });
               setInLibrary(!inLibrary);
             }}
           >

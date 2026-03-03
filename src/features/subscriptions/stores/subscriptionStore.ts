@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SubscriptionTier, SubscriptionInfo } from '../services/revenueCat';
-import { setUserProperties } from '@/services/amplitude';
 
 interface SubscriptionState {
   tier: SubscriptionTier;
@@ -36,19 +35,6 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
       ...initialState,
 
       setSubscriptionInfo: (info) => {
-        const previous = get();
-        const nowActivating = info.isActive && !previous.isActive;
-
-        const properties: Record<string, unknown> = {
-          subscription_tier: info.tier,
-          is_premium: info.isActive,
-        };
-
-        if (nowActivating) {
-          properties.subscription_start_date = new Date().toISOString();
-        }
-
-        setUserProperties(properties);
         set({
           tier: info.tier,
           isActive: info.isActive,

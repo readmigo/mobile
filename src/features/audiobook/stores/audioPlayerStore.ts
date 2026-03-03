@@ -4,7 +4,6 @@ import { immer } from 'zustand/middleware/immer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAudioService } from '../services/audioService';
 import { audiobookApi } from '../services/audiobookApi';
-import { trackEvent } from '@/services/amplitude';
 import type {
   Audiobook,
   AudiobookChapter,
@@ -123,7 +122,6 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
       play: async () => {
         const audioService = getAudioService();
         try {
-          trackEvent('audiobook_play');
           await audioService.play();
         } catch (error) {
           set((state) => {
@@ -134,7 +132,6 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
 
       pause: async () => {
         const audioService = getAudioService();
-        trackEvent('audiobook_pause');
         await audioService.pause();
       },
 
@@ -277,7 +274,6 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
       setPlaybackSpeed: async (speed: PlaybackSpeed) => {
         const audioService = getAudioService();
         await audioService.setPlaybackSpeed(speed);
-        trackEvent('audiobook_speed_changed', { speed });
         set((state) => {
           state.playbackSpeed = speed;
         });
@@ -335,8 +331,6 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
       loadAudiobook: async (audiobook: Audiobook, startChapter = 0, startPosition = 0) => {
         const { playbackSpeed } = get();
         const chapter = audiobook.chapters[startChapter] || audiobook.chapters[0];
-
-        trackEvent('audiobook_play_started', { audiobook_id: audiobook.id });
 
         set((state) => {
           state.audiobook = audiobook;
@@ -397,8 +391,6 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
           clearTimeout(progressSyncTimeout);
           progressSyncTimeout = null;
         }
-
-        trackEvent('audiobook_session_ended', { audiobook_id: audiobookId });
 
         set((state) => {
           state.audiobook = null;

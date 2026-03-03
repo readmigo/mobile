@@ -12,7 +12,6 @@ import '@/i18n';
 import { queryClient } from '@/services/queryClient';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthStore } from '@/stores/authStore';
-import { initAmplitude } from '@/services/amplitude';
 
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
@@ -20,10 +19,6 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const { navigationTheme, isDark } = useTheme();
   const isLoading = useAuthStore((state) => state.isLoading);
-
-  useEffect(() => {
-    initAmplitude();
-  }, []);
 
   // Safety timeout: force hide splash if rehydration takes too long
   useEffect(() => {

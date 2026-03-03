@@ -6,7 +6,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useTranslation } from 'react-i18next';
-import { trackEvent } from '@/services/amplitude';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -34,7 +33,6 @@ export default function MeScreen() {
           text: t('auth.logout'),
           style: 'destructive',
           onPress: () => {
-            trackEvent('user_logged_out');
             logout();
           },
         },

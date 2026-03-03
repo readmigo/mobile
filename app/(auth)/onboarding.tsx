@@ -13,7 +13,6 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettingsStore } from '@/stores/settingsStore';
-import { trackEvent } from '@/services/amplitude';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -137,7 +136,6 @@ export default function OnboardingScreen() {
   // ---- handlers ----
   const handleContinue = () => {
     if (currentStep < TOTAL_STEPS - 1) {
-      trackEvent('onboarding_step_completed', { step: currentStep });
       setCurrentStep(currentStep + 1);
     } else {
       // Save daily goal to settings store
@@ -146,7 +144,6 @@ export default function OnboardingScreen() {
       console.log('[Onboarding] level:', selectedLevel);
       console.log('[Onboarding] dailyGoal:', selectedGoal);
       console.log('[Onboarding] interests:', [...selectedInterests]);
-      trackEvent('onboarding_completed', { level: selectedLevel, dailyGoal: selectedGoal });
       router.replace('/(auth)/login');
     }
   };

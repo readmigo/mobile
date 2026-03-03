@@ -10,7 +10,6 @@ import {
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
-import { trackEvent } from '@/services/amplitude';
 import { useAIExplain, useAITranslate, useAISimplify } from '../hooks/useAIExplain';
 import { useSaveVocabulary } from '../hooks/useVocabulary';
 import { useSettingsStore } from '@/stores/settingsStore';
@@ -52,15 +51,12 @@ export function AIExplanationPanel({
     try {
       switch (action) {
         case 'explain':
-          trackEvent('ai_explain_used', { book_id: bookId });
           await explain(selectedText, context, bookId);
           break;
         case 'translate':
-          trackEvent('ai_translate_used', { book_id: bookId });
           await translate(selectedText, language.startsWith('zh') ? 'zh-CN' : language);
           break;
         case 'simplify':
-          trackEvent('ai_simplify_used', { book_id: bookId });
           await simplify(selectedText);
           break;
       }
@@ -81,7 +77,6 @@ export function AIExplanationPanel({
         context,
         bookId,
       });
-      trackEvent('word_saved', { book_id: bookId });
     } catch (error) {
       console.error('Failed to save word:', error);
     }

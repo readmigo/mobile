@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { trackEvent } from '@/services/amplitude';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type ReaderTheme = 'light' | 'dark' | 'sepia';
@@ -75,12 +74,10 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       ...defaultSettings,
 
       setThemeMode: (mode) => {
-        trackEvent('setting_changed', { setting: 'theme', value: mode });
         set({ themeMode: mode });
       },
 
       setLanguage: (lang) => {
-        trackEvent('language_changed', { language: lang });
         set({ language: lang });
       },
 
@@ -92,7 +89,6 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
 
       toggleNotifications: () =>
         set((state) => {
-          trackEvent('setting_changed', { setting: 'notifications', value: !state.notificationsEnabled });
           return { notificationsEnabled: !state.notificationsEnabled };
         }),
 

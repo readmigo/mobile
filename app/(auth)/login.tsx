@@ -16,7 +16,6 @@ import * as WebBrowser from 'expo-web-browser';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
-import { trackEvent } from '@/services/amplitude';
 import {
   signInWithApple,
   isAppleAuthAvailable,
@@ -92,7 +91,6 @@ export default function LoginScreen() {
           provider: 'google',
           idToken: result.idToken,
         });
-        trackEvent('user_logged_in', { method: 'google' });
         router.replace('/(tabs)/library');
       }
     } catch (err: any) {
@@ -113,7 +111,6 @@ export default function LoginScreen() {
         idToken: result.idToken,
         nonce: result.nonce,
       });
-      trackEvent('user_logged_in', { method: 'apple' });
       router.replace('/(tabs)/library');
     } catch (err: any) {
       if (!err.message?.includes('cancelled')) {
@@ -139,7 +136,6 @@ export default function LoginScreen() {
   };
 
   const handleGuestMode = () => {
-    trackEvent('guest_mode_entered');
     enterGuestMode();
     router.replace('/(tabs)/library');
   };

@@ -70,7 +70,6 @@
     },
     "extra": {
       "apiUrl": "https://api.readmigo.app",
-      "amplitudeApiKey": "58caf24e4f3c7a767db27020d9ec386c",
       "eas": {
         "projectId": "your-eas-project-id"
       }

@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import en from './locales/en.json';
 import zhHans from './locales/zh-Hans.json';
 import zhHant from './locales/zh-Hant.json';
+import de from './locales/de.json';
 
 const LANGUAGE_STORAGE_KEY = 'user-language';
 
@@ -13,14 +14,16 @@ const resources = {
   en: { translation: en },
   'zh-Hans': { translation: zhHans },
   'zh-Hant': { translation: zhHant },
+  de: { translation: de },
 };
 
-export type SupportedLanguage = 'en' | 'zh-Hans' | 'zh-Hant';
+export type SupportedLanguage = 'en' | 'zh-Hans' | 'zh-Hant' | 'de';
 
 export const SUPPORTED_LANGUAGES: { code: SupportedLanguage; name: string; nativeName: string }[] = [
   { code: 'en', name: 'English', nativeName: 'English' },
   { code: 'zh-Hans', name: 'Simplified Chinese', nativeName: '简体中文' },
   { code: 'zh-Hant', name: 'Traditional Chinese', nativeName: '繁體中文' },
+  { code: 'de', name: 'German', nativeName: 'Deutsch' },
 ];
 
 const getDeviceLanguage = (): SupportedLanguage => {
@@ -35,6 +38,10 @@ const getDeviceLanguage = (): SupportedLanguage => {
       return 'zh-Hant';
     }
     return 'zh-Hans'; // Default to simplified for other zh locales
+  }
+
+  if (locale.startsWith('de')) {
+    return 'de';
   }
 
   return 'en';
@@ -54,7 +61,7 @@ i18n.use(initReactI18next).init({
 
 // Load saved language preference
 AsyncStorage.getItem(LANGUAGE_STORAGE_KEY).then((savedLang) => {
-  if (savedLang && (savedLang === 'en' || savedLang === 'zh-Hans' || savedLang === 'zh-Hant')) {
+  if (savedLang && (savedLang === 'en' || savedLang === 'zh-Hans' || savedLang === 'zh-Hant' || savedLang === 'de')) {
     i18n.changeLanguage(savedLang);
   }
 });

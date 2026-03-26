@@ -18,7 +18,7 @@ import { useSettingsStore } from '@/stores/settingsStore';
 // Types
 // ---------------------------------------------------------------------------
 
-type LevelKey = 'beginner' | 'elementary' | 'intermediate' | 'advanced';
+type LevelKey = 'beginner' | 'elementary' | 'intermediate' | 'upperIntermediate' | 'advanced';
 
 interface LevelOption {
   key: LevelKey;
@@ -47,7 +47,8 @@ const LEVEL_OPTIONS: LevelOption[] = [
   { key: 'beginner', number: 'A1', title: 'Beginner', description: 'I know a few basic words' },
   { key: 'elementary', number: 'A2', title: 'Elementary', description: 'I can handle simple conversations' },
   { key: 'intermediate', number: 'B1', title: 'Intermediate', description: 'I can read simple articles' },
-  { key: 'advanced', number: 'B2', title: 'Advanced', description: 'I can read most English content' },
+  { key: 'upperIntermediate', number: 'B2', title: 'Upper Intermediate', description: 'I can understand most English content' },
+  { key: 'advanced', number: 'C1', title: 'Advanced', description: 'I can read complex texts fluently' },
 ];
 
 const GOAL_OPTIONS: GoalOption[] = [
@@ -138,9 +139,9 @@ export default function OnboardingScreen() {
     if (currentStep < TOTAL_STEPS - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Save daily goal to settings store
+      // Save settings
       setDailyGoal(selectedGoal);
-      // Log selections for debugging
+      // TODO: Persist level and interests to backend via API when available
       console.log('[Onboarding] level:', selectedLevel);
       console.log('[Onboarding] dailyGoal:', selectedGoal);
       console.log('[Onboarding] interests:', [...selectedInterests]);

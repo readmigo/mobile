@@ -10,7 +10,20 @@ export interface User {
   avatarUrl?: string;
   subscriptionTier: 'free' | 'premium';
   createdAt?: string;
+  englishLevel?: EnglishLevel;
+  interests?: string[];
+  dailyGoalMinutes?: number;
 }
+
+export type EnglishLevel = 'beginner' | 'elementary' | 'intermediate' | 'upperIntermediate' | 'advanced';
+
+export const DIFFICULTY_RANGES: Record<EnglishLevel, { min: number; max: number }> = {
+  beginner: { min: 1, max: 3 },
+  elementary: { min: 2, max: 4 },
+  intermediate: { min: 3, max: 6 },
+  upperIntermediate: { min: 5, max: 8 },
+  advanced: { min: 7, max: 10 },
+};
 
 interface AuthState {
   user: User | null;

@@ -52,6 +52,33 @@ export interface SavedWord {
   nextReviewAt?: string;
 }
 
+export interface ParagraphTranslation {
+  chapterId: string;
+  locale: string;
+  paragraphIndex: number;
+  original: string;
+  translation: string;
+}
+
+export interface ChapterTranslationAvailability {
+  chapterId: string;
+  availableLocales: string[];
+  paragraphCount?: number;
+}
+
+export const TRANSLATION_LOCALES = [
+  { code: 'zh-Hans', name: 'Chinese (Simplified)', flag: '🇨🇳' },
+  { code: 'zh-Hant', name: 'Chinese (Traditional)', flag: '🇹🇼' },
+  { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+  { code: 'fr', name: 'French', flag: '🇫🇷' },
+  { code: 'de', name: 'German', flag: '🇩🇪' },
+  { code: 'pt', name: 'Portuguese', flag: '🇵🇹' },
+  { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
+  { code: 'tr', name: 'Turkish', flag: '🇹🇷' },
+] as const;
+
 export const aiApi = {
   explain: async (data: ExplainRequest): Promise<ApiResponse<ExplainResponse>> => {
     const response = await apiClient.post('/ai/explain', data);
@@ -94,6 +121,39 @@ export const aiApi = {
 
   getWordsForReview: async (): Promise<ApiResponse<SavedWord[]>> => {
     const response = await apiClient.get('/vocabulary/review');
+    return response.data;
+  },
+
+  // Translation
+  getTranslationAvailability: async (bookId: string, chapterId: string): Promise<ApiResponse<ChapterTranslationAvailability>> => {
+    const response = await apiClient.get(`/books/${bookId}/chapters/${chapterId}/translations/available`);
+    return response.data;
+  },
+
+  getParagraphTranslation: async (
+    bookId: string,
+    chapterId: string,
+    locale: string,
+    paragraphIndex: number,
+  ): Promise<ApiResponse<ParagraphTranslation>> => {
+    const response = await apiClient.get(
+      `/books/${bookId}/chapters/${chapterId}/translations/${locale}/paragraphs/${paragraphIndex}`,
+    );
+    return response.data;
+  },
+
+  getSentenceTranslation: async (
+    bookId: string,
+    chapterId: string,
+    locale: string,
+    paragraphIndex: number,
+    charOffset: number,
+    charLength: number,
+  ): Promise<ApiResponse<ParagraphTranslation>> => {
+    const response = await apiClient.get(
+      `/books/${bookId}/chapters/${chapterId}/translations/${locale}/paragraphs/${paragraphIndex}`,
+      { params: { charOffset, charLength } },
+    );
     return response.data;
   },
 };

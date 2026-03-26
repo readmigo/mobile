@@ -134,12 +134,11 @@ export default function ReaderScreen() {
       <ReaderControls visible={showSettings} onClose={() => setShowSettings(false)} />
 
       {/* AI Explanation Panel */}
-      {selectedText && (
+      {selectedText && showAIPanel && (
         <AIExplanationPanel
-          selectedText={selectedText}
+          text={selectedText}
           bookId={bookId}
-          visible={showAIPanel}
-          onDismiss={handleDismissAI}
+          onClose={handleDismissAI}
         />
       )}
     </SafeAreaView>

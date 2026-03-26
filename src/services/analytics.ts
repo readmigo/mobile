@@ -23,7 +23,7 @@ export async function initAnalytics() {
   });
 }
 
-export function identifyUser(userId: string, properties?: Record<string, unknown>) {
+export function identifyUser(userId: string, properties?: Record<string, string | number | boolean>) {
   posthogClient?.identify(userId, properties);
 }
 
@@ -31,7 +31,7 @@ export function resetUser() {
   posthogClient?.reset();
 }
 
-export function registerSuperProperties(properties: Record<string, unknown>) {
+export function registerSuperProperties(properties: Record<string, string | number | boolean>) {
   posthogClient?.register(properties);
 }
 
@@ -47,8 +47,8 @@ export function setSuperProperties() {
 
 // ---- Event Tracking ----
 
-export function trackEvent(event: string, properties?: Record<string, unknown>) {
-  posthogClient?.capture(event, properties);
+export function trackEvent(event: string, properties?: Record<string, string | number | boolean>) {
+  posthogClient?.capture(event, properties as any);
 }
 
 // Audiobook Events (aligned with iOS)
@@ -161,7 +161,7 @@ export function trackAITranslateUsed(props: {
 export function trackOnboardingStepCompleted(props: {
   step: number;
   stepName: string;
-  selection?: unknown;
+  selection?: string;
 }) {
   trackEvent('onboarding_step_completed', props);
 }

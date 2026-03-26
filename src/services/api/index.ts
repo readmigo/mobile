@@ -3,3 +3,4 @@ export * from './auth';
 export * from './books';
 export * from './ai';
 export * from './agora';
+export * from './tts';

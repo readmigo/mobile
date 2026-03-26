@@ -12,13 +12,45 @@ import '@/i18n';
 import { queryClient } from '@/services/queryClient';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthStore } from '@/stores/authStore';
+import { initSentry, setUser as setSentryUser, clearUser as clearSentryUser, Sentry } from '@/services/crashTracking';
+import { initAnalytics, identifyUser, resetUser, setSuperProperties, registerSuperProperties } from '@/services/analytics';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+
+// Initialize Sentry early
+initSentry();
 
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayoutInner() {
   const { navigationTheme, isDark } = useTheme();
   const isLoading = useAuthStore((state) => state.isLoading);
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  // Initialize analytics
+  useEffect(() => {
+    initAnalytics().then(() => {
+      setSuperProperties();
+    });
+  }, []);
+
+  // Sync user with Sentry & PostHog
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setSentryUser(user.id, user.displayName);
+      identifyUser(user.id, {
+        subscription_tier: user.subscriptionTier,
+        display_name: user.displayName,
+      });
+      registerSuperProperties({
+        subscription_tier: user.subscriptionTier,
+      });
+    } else {
+      clearSentryUser();
+      resetUser();
+    }
+  }, [isAuthenticated, user]);
 
   // Safety timeout: force hide splash if rehydration takes too long
   useEffect(() => {
@@ -101,3 +133,13 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+function RootLayout() {
+  return (
+    <ErrorBoundary>
+      <RootLayoutInner />
+    </ErrorBoundary>
+  );
+}
+
+export default Sentry.wrap(RootLayout);

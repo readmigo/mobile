@@ -5,7 +5,35 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type ReaderTheme = 'light' | 'dark' | 'sepia';
 export type Language = 'en' | 'zh-Hans' | 'zh-Hant';
-export type TextAlignment = 'left' | 'justify';
+export type TextAlignment = 'left' | 'center' | 'right' | 'justified';
+
+export const AVAILABLE_FONTS = [
+  { id: 'system', name: 'System', category: 'sans-serif' },
+  { id: 'system-serif', name: 'System Serif', category: 'serif' },
+  { id: 'Georgia', name: 'Georgia', category: 'serif' },
+  { id: 'Palatino', name: 'Palatino', category: 'serif' },
+  { id: 'Times New Roman', name: 'Times New Roman', category: 'serif' },
+  { id: 'Baskerville', name: 'Baskerville', category: 'serif' },
+  { id: 'Helvetica Neue', name: 'Helvetica Neue', category: 'sans-serif' },
+  { id: 'Avenir', name: 'Avenir', category: 'sans-serif' },
+  { id: 'Literata', name: 'Literata', category: 'serif' },
+  { id: 'Source Serif 4', name: 'Source Serif 4', category: 'serif' },
+  { id: 'Crimson Pro', name: 'Crimson Pro', category: 'serif' },
+  { id: 'IBM Plex Serif', name: 'IBM Plex Serif', category: 'serif' },
+  { id: 'Bitter', name: 'Bitter', category: 'serif' },
+  { id: 'Atkinson Hyperlegible', name: 'Atkinson Hyperlegible', category: 'sans-serif' },
+  { id: 'OpenDyslexic', name: 'OpenDyslexic', category: 'sans-serif' },
+  { id: 'JetBrains Mono', name: 'JetBrains Mono', category: 'monospace' },
+  { id: 'PingFang SC', name: '苹方', category: 'chinese' },
+  { id: 'Songti SC', name: '宋体', category: 'chinese' },
+  { id: 'Kaiti SC', name: '楷体', category: 'chinese' },
+] as const;
+
+export const READER_THEME_COLORS = {
+  light: { background: '#FFFFFF', text: '#1A1A1A', secondary: '#666666', link: '#4285F4' },
+  sepia: { background: '#FAF2E3', text: '#4D3319', secondary: '#7A6652', link: '#3B6BA5' },
+  dark: { background: '#1F1F1F', text: '#D9D9D9', secondary: '#999999', link: '#6BA3F7' },
+} as const;
 
 interface SettingsState {
   // App Settings
@@ -20,6 +48,13 @@ interface SettingsState {
   lineSpacing: number;
   textAlignment: TextAlignment;
   marginHorizontal: number;
+
+  // Extended Reader Settings
+  letterSpacing: number;
+  wordSpacing: number;
+  paragraphSpacing: number;
+  fontWeight: 300 | 400 | 500 | 600 | 700;
+  hyphenation: boolean;
 
   // Learning Settings
   dailyGoal: number;
@@ -57,6 +92,13 @@ const defaultSettings: SettingsState = {
   lineSpacing: 1.6,
   textAlignment: 'left',
   marginHorizontal: 16,
+
+  // Extended Reader Settings
+  letterSpacing: 0,
+  wordSpacing: 0,
+  paragraphSpacing: 12,
+  fontWeight: 400,
+  hyphenation: false,
 
   // Learning Settings
   dailyGoal: 20,

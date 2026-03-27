@@ -65,6 +65,36 @@ export default function MeScreen() {
       title: t('offline.title', { defaultValue: 'Downloads' }),
       onPress: () => router.push('/offline-manager' as any),
     },
+    {
+      id: 'quotes',
+      icon: 'chatbox-ellipses-outline',
+      title: t('quotes.title', { defaultValue: 'Quotes' }),
+      onPress: () => router.push('/quotes' as any),
+    },
+    {
+      id: 'postcards',
+      icon: 'images-outline',
+      title: t('postcards.title', { defaultValue: 'Postcards' }),
+      onPress: () => router.push('/postcards' as any),
+    },
+    {
+      id: 'annual-report',
+      icon: 'calendar-outline',
+      title: t('annualReport.title', { defaultValue: 'Year in Review' }),
+      onPress: () => router.push('/annual-report' as any),
+    },
+    {
+      id: 'badges',
+      icon: 'trophy-outline',
+      title: t('badges.title', { defaultValue: 'Achievements' }),
+      onPress: () => router.push('/badges' as any),
+    },
+    {
+      id: 'devices',
+      icon: 'phone-portrait-outline',
+      title: t('devices.title', { defaultValue: 'Manage Devices' }),
+      onPress: () => router.push('/devices' as any),
+    },
   ];
 
   const contactUsSection: SettingItem[] = [

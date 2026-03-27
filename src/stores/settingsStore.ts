@@ -4,7 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type ReaderTheme = 'light' | 'dark' | 'sepia';
-export type Language = 'en' | 'zh-Hans' | 'zh-Hant';
+export type Language =
+  | 'en' | 'zh-Hans' | 'zh-Hant' | 'de'
+  | 'es' | 'fr' | 'ja' | 'ko' | 'ar' | 'pt'
+  | 'ru' | 'tr' | 'id' | 'uk' | 'hi';
 export type TextAlignment = 'left' | 'center' | 'right' | 'justified';
 
 export const AVAILABLE_FONTS = [

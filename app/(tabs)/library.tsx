@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,8 +15,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
 import { UserBook } from '@/services/api/books';
+import { ImportSheet } from '@/features/import/components/ImportSheet';
 import {
   useCurrentlyReading,
   useRecentlyBrowsed,
@@ -327,6 +329,8 @@ function EmptyLibraryState() {
 
 export default function LibraryScreen() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
+  const importSheetRef = useRef<BottomSheet>(null);
 
   const { data: currentlyReading, isLoading: loadingCurrent, refetch: refetchCurrent } = useCurrentlyReading();
   const { data: recentlyBrowsed, isLoading: loadingRecent, refetch: refetchRecent } = useRecentlyBrowsed();
@@ -355,6 +359,20 @@ export default function LibraryScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Import Button */}
+      <View style={styles.headerRow}>
+        <View />
+        <TouchableOpacity
+          style={[styles.importBtn, { backgroundColor: colors.primary + '15' }]}
+          onPress={() => importSheetRef.current?.snapToIndex(0)}
+        >
+          <Ionicons name="add-circle-outline" size={18} color={colors.primary} />
+          <Text style={[styles.importBtnText, { color: colors.primary }]}>
+            {t('import.title', { defaultValue: 'Import' })}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {hasContent ? (
         <ScrollView
           style={styles.scrollView}
@@ -383,6 +401,9 @@ export default function LibraryScreen() {
       ) : (
         <EmptyLibraryState />
       )}
+
+      {/* Import Sheet */}
+      <ImportSheet sheetRef={importSheetRef} onImportComplete={handleRefresh} />
     </SafeAreaView>
   );
 }
@@ -392,6 +413,25 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  importBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  importBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   scrollView: {
     flex: 1,

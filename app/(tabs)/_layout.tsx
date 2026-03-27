@@ -1,17 +1,49 @@
+import { View, Text, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
+import { useUnreadCount } from '@/features/notifications/hooks/useNotifications';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
-function TabBarIcon({ name, color }: { name: IconName; color: string }) {
-  return <Ionicons name={name} size={24} color={color} />;
+function TabBarIcon({ name, color, badge }: { name: IconName; color: string; badge?: number }) {
+  return (
+    <View>
+      <Ionicons name={name} size={24} color={color} />
+      {badge != null && badge > 0 && (
+        <View style={tabStyles.badge}>
+          <Text style={tabStyles.badgeText}>{badge > 99 ? '99+' : badge}</Text>
+        </View>
+      )}
+    </View>
+  );
 }
+
+const tabStyles = StyleSheet.create({
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -10,
+    backgroundColor: '#E53935',
+    borderRadius: 9,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+});
 
 export default function TabLayout() {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const { data: unreadCount } = useUnreadCount();
 
   return (
     <Tabs
@@ -58,7 +90,7 @@ export default function TabLayout() {
         options={{
           title: t('me.title'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'person-circle' : 'person-circle-outline'} color={color} />
+            <TabBarIcon name={focused ? 'person-circle' : 'person-circle-outline'} color={color} badge={unreadCount} />
           ),
         }}
       />

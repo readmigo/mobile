@@ -15,6 +15,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { initSentry, setUser as setSentryUser, clearUser as clearSentryUser, Sentry } from '@/services/crashTracking';
 import { initAnalytics, identifyUser, resetUser, setSuperProperties, registerSuperProperties } from '@/services/analytics';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { registerForPushNotifications, setupNotificationListeners } from '@/services/notifications';
+import { checkForUpdate } from '@/services/versionCheck';
 
 // Initialize Sentry early
 initSentry();
@@ -28,12 +30,22 @@ function RootLayoutInner() {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  // Initialize analytics
+  // Initialize analytics + version check
   useEffect(() => {
     initAnalytics().then(() => {
       setSuperProperties();
     });
+    checkForUpdate();
   }, []);
+
+  // Initialize push notifications & listeners
+  useEffect(() => {
+    if (isAuthenticated) {
+      registerForPushNotifications();
+    }
+    const cleanup = setupNotificationListeners();
+    return cleanup;
+  }, [isAuthenticated]);
 
   // Sync user with Sentry & PostHog
   useEffect(() => {

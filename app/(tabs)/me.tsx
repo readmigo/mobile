@@ -47,9 +47,27 @@ export default function MeScreen() {
       title: t('stats.title', { defaultValue: 'Reading Stats' }),
       onPress: () => router.push('/reading-stats' as any),
     },
+    {
+      id: 'notifications',
+      icon: 'notifications-outline',
+      title: t('notifications.title', { defaultValue: 'Notifications' }),
+      onPress: () => router.push('/notifications' as any),
+    },
+    {
+      id: 'offline-manager',
+      icon: 'download-outline',
+      title: t('offline.title', { defaultValue: 'Downloads' }),
+      onPress: () => router.push('/offline-manager' as any),
+    },
   ];
 
   const contactUsSection: SettingItem[] = [
+    {
+      id: 'help',
+      icon: 'help-circle-outline',
+      title: t('help.title', { defaultValue: 'Help Center' }),
+      onPress: () => router.push('/help' as any),
+    },
     {
       id: 'contact',
       icon: 'chatbubble-outline',

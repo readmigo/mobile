@@ -48,6 +48,12 @@ export default function MeScreen() {
       onPress: () => router.push('/reading-stats' as any),
     },
     {
+      id: 'community',
+      icon: 'chatbubbles-outline',
+      title: t('agora.title', { defaultValue: 'Community' }),
+      onPress: () => router.push('/agora' as any),
+    },
+    {
       id: 'notifications',
       icon: 'notifications-outline',
       title: t('notifications.title', { defaultValue: 'Notifications' }),
@@ -72,7 +78,7 @@ export default function MeScreen() {
       id: 'contact',
       icon: 'chatbubble-outline',
       title: t('me.contactUs', { defaultValue: 'Contact Us' }),
-      onPress: () => {},
+      onPress: () => router.push('/chat' as any),
     },
   ];
 

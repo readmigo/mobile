@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
+import { apiClient } from '@/services/api/client';
+import { useMutation } from '@tanstack/react-query';
 
 interface CollapsibleSectionProps {
   title: string;
@@ -59,6 +61,18 @@ export default function AuthorDetailScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  const [isFollowing, setIsFollowing] = useState(false);
+  const { mutate: toggleFollow, isPending: followLoading } = useMutation({
+    mutationFn: async () => {
+      if (isFollowing) {
+        await apiClient.delete(`/authors/${id}/follow`);
+      } else {
+        await apiClient.post(`/authors/${id}/follow`);
+      }
+    },
+    onSuccess: () => setIsFollowing(!isFollowing),
+  });
 
   // Mock author data
   const author = {
@@ -128,6 +142,32 @@ export default function AuthorDetailScreen() {
           <Text style={[styles.authorMeta, { color: colors.textSecondary }]}>
             {author.nationality} ({author.birthYear} - {author.deathYear})
           </Text>
+          <TouchableOpacity
+            style={[
+              styles.followBtn,
+              {
+                backgroundColor: isFollowing ? colors.surface : colors.primary,
+                borderColor: isFollowing ? colors.border : colors.primary,
+              },
+            ]}
+            onPress={() => toggleFollow()}
+            disabled={followLoading}
+          >
+            {followLoading ? (
+              <ActivityIndicator size="small" color={isFollowing ? colors.text : colors.onPrimary} />
+            ) : (
+              <>
+                <Ionicons
+                  name={isFollowing ? 'checkmark' : 'add'}
+                  size={16}
+                  color={isFollowing ? colors.text : colors.onPrimary}
+                />
+                <Text style={[styles.followText, { color: isFollowing ? colors.text : colors.onPrimary }]}>
+                  {isFollowing ? t('author.following', { defaultValue: 'Following' }) : t('author.follow', { defaultValue: 'Follow' })}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Biography */}
@@ -256,6 +296,20 @@ const styles = StyleSheet.create({
   },
   authorMeta: {
     fontSize: 15,
+    marginBottom: 12,
+  },
+  followBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  followText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   bodyText: {
     fontSize: 15,

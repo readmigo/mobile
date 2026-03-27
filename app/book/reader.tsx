@@ -17,6 +17,9 @@ import { AIExplanationPanel } from '@/features/ai';
 import { BookmarkPanel } from '@/features/reader/components/BookmarkPanel';
 import { HighlightToolbar } from '@/features/reader/components/HighlightToolbar';
 import { HighlightListPanel } from '@/features/reader/components/HighlightListPanel';
+import { AutoPageControl } from '@/features/reader/components/AutoPageControl';
+import { getFocusModeJS, type FocusMode } from '@/features/reader/components/FocusModeSelector';
+import type { BilingualMode } from '@/features/reader/components/BilingualToggle';
 import { useHighlightStore } from '@/features/reader/stores/highlightStore';
 import { useReadingProgress } from '@/features/reader/hooks/useReadingProgress';
 
@@ -38,6 +41,10 @@ export default function ReaderScreen() {
   const [totalPages, setTotalPages] = useState(1);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+  const [focusMode, setFocusMode] = useState<FocusMode>('off');
+  const [bilingualMode, setBilingualMode] = useState<BilingualMode>('off');
+  const [bilingualLocale, setBilingualLocale] = useState('zh-Hans');
+  const [showAutoPage, setShowAutoPage] = useState(false);
 
   // Reading progress sync
   const { updateLocation, flush: flushProgress } = useReadingProgress({ bookId });
@@ -117,6 +124,19 @@ export default function ReaderScreen() {
     highlightSheetRef.current?.snapToIndex(0);
   }, []);
 
+  // Focus mode: inject CSS into WebView
+  const webViewRef = useRef<any>(null);
+  const handleFocusModeChange = useCallback((mode: FocusMode) => {
+    setFocusMode(mode);
+    const js = getFocusModeJS(mode);
+    webViewRef.current?.injectJavaScript?.(js);
+  }, []);
+
+  // Auto-page: send next command
+  const handleAutoPageNext = useCallback(() => {
+    webViewRef.current?.injectJavaScript?.(`window.handleMessage('${JSON.stringify({ action: 'next' })}'); true;`);
+  }, []);
+
   const handleToggleBookmark = useCallback(() => {
     if (!bookId || !currentCfi) return;
 
@@ -180,6 +200,9 @@ export default function ReaderScreen() {
           <TouchableOpacity onPress={handleOpenBookmarks} style={styles.headerBtn}>
             <Ionicons name="list-outline" size={22} color={currentReaderTheme.text} />
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowAutoPage(!showAutoPage)} style={styles.headerBtn}>
+            <Ionicons name="play-forward-outline" size={22} color={showAutoPage ? colors.primary : currentReaderTheme.text} />
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerBtn}>
             <Ionicons name="settings-outline" size={22} color={currentReaderTheme.text} />
           </TouchableOpacity>
@@ -233,8 +256,24 @@ export default function ReaderScreen() {
         </View>
       </View>
 
+      {/* Auto Page Control */}
+      <AutoPageControl
+        visible={showAutoPage}
+        onPageNext={handleAutoPageNext}
+        onClose={() => setShowAutoPage(false)}
+      />
+
       {/* Reader Settings */}
-      <ReaderControls visible={showSettings} onClose={() => setShowSettings(false)} />
+      <ReaderControls
+        visible={showSettings}
+        onClose={() => setShowSettings(false)}
+        focusMode={focusMode}
+        onFocusModeChange={handleFocusModeChange}
+        bilingualMode={bilingualMode}
+        bilingualLocale={bilingualLocale}
+        onBilingualModeChange={setBilingualMode}
+        onBilingualLocaleChange={setBilingualLocale}
+      />
 
       {/* AI Explanation Panel */}
       {selectedText && showAIPanel && (

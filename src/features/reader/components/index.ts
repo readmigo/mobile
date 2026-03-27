@@ -7,3 +7,6 @@ export * from './BookmarkPanel';
 export * from './HighlightToolbar';
 export * from './HighlightListPanel';
 export * from './NoteEditor';
+export * from './FocusModeSelector';
+export * from './BilingualToggle';
+export * from './AutoPageControl';

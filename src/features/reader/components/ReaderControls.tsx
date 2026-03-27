@@ -10,12 +10,30 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettingsStore } from '@/stores/settingsStore';
 
+import { FocusModeSelector, FocusMode } from './FocusModeSelector';
+import { BilingualToggle, BilingualMode } from './BilingualToggle';
+
 interface ReaderControlsProps {
   visible: boolean;
   onClose: () => void;
+  focusMode?: FocusMode;
+  onFocusModeChange?: (mode: FocusMode) => void;
+  bilingualMode?: BilingualMode;
+  bilingualLocale?: string;
+  onBilingualModeChange?: (mode: BilingualMode) => void;
+  onBilingualLocaleChange?: (locale: string) => void;
 }
 
-export function ReaderControls({ visible, onClose }: ReaderControlsProps) {
+export function ReaderControls({
+  visible,
+  onClose,
+  focusMode = 'off',
+  onFocusModeChange,
+  bilingualMode = 'off',
+  bilingualLocale = 'zh-Hans',
+  onBilingualModeChange,
+  onBilingualLocaleChange,
+}: ReaderControlsProps) {
   const { colors } = useTheme();
   const { fontSize, readerTheme, lineSpacing, setReaderSettings } = useSettingsStore();
 
@@ -103,6 +121,21 @@ export function ReaderControls({ visible, onClose }: ReaderControlsProps) {
             </View>
           </View>
         </View>
+
+          {/* Focus Mode */}
+          {onFocusModeChange && (
+            <FocusModeSelector current={focusMode} onSelect={onFocusModeChange} />
+          )}
+
+          {/* Bilingual Reading */}
+          {onBilingualModeChange && onBilingualLocaleChange && (
+            <BilingualToggle
+              mode={bilingualMode}
+              locale={bilingualLocale}
+              onModeChange={onBilingualModeChange}
+              onLocaleChange={onBilingualLocaleChange}
+            />
+          )}
       </View>
     </Modal>
   );

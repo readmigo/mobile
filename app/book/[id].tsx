@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
+import { useBookDetail } from '@/features/books/hooks';
+import { useUserLibrary } from '@/features/library/hooks/useLibrary';
+import { booksApi } from '@/services/api/books';
 
 export default function BookDetailScreen() {
   const { colors } = useTheme();
@@ -13,39 +16,41 @@ export default function BookDetailScreen() {
   const [chaptersExpanded, setChaptersExpanded] = useState(false);
   const [inLibrary, setInLibrary] = useState(false);
 
-  // Mock book data
-  const book = {
-    id,
-    title: 'The Great Gatsby',
-    author: 'F. Scott Fitzgerald',
-    authorId: 'fitzgerald-001',
-    description:
-      'The Great Gatsby is a 1925 novel by American writer F. Scott Fitzgerald. Set in the Jazz Age on Long Island, near New York City, the novel depicts first-person narrator Nick Carraway\'s interactions with mysterious millionaire Jay Gatsby and Gatsby\'s obsession to reunite with his former lover, Daisy Buchanan.',
-    category: 'Classics',
-    difficulty: 3,
-    pageCount: 180,
-    language: 'English',
-    isFree: true,
-    hasAudiobook: true,
-    progress: 0.35,
-    chapters: [
-      { id: '1', title: 'Chapter 1', wordCount: 3500 },
-      { id: '2', title: 'Chapter 2', wordCount: 4200 },
-      { id: '3', title: 'Chapter 3', wordCount: 3800 },
-      { id: '4', title: 'Chapter 4', wordCount: 4100 },
-      { id: '5', title: 'Chapter 5', wordCount: 3600 },
-      { id: '6', title: 'Chapter 6', wordCount: 3900 },
-      { id: '7', title: 'Chapter 7', wordCount: 5200 },
-      { id: '8', title: 'Chapter 8', wordCount: 4500 },
-      { id: '9', title: 'Chapter 9', wordCount: 3700 },
-    ],
-  };
+  const { data: bookDetail, isLoading } = useBookDetail(id || '');
+  const { data: libraryBooks } = useUserLibrary();
 
-  const handleStartReading = () => {
-    router.push({
-      pathname: '/book/reader',
-      params: { bookId: id },
-    });
+  // Find user's progress for this book from library
+  const userBook = libraryBooks?.find((ub) => ub.bookId === id);
+  const currentProgress = userBook?.progress ?? 0;
+  const currentCfi = userBook?.currentCfi;
+
+  const book = bookDetail
+    ? {
+        ...bookDetail,
+        authorId: bookDetail.author.replace(/\s/g, '-').toLowerCase(),
+        progress: currentProgress,
+      }
+    : null;
+
+  const handleStartReading = async () => {
+    // Fetch book content URL from API
+    try {
+      const response = await booksApi.getBookContent(id || '');
+      router.push({
+        pathname: '/book/reader',
+        params: {
+          bookId: id,
+          bookUrl: response.data.url,
+          ...(currentCfi ? { initialCfi: currentCfi } : {}),
+        },
+      });
+    } catch {
+      // Fallback: navigate without URL, reader will show placeholder
+      router.push({
+        pathname: '/book/reader',
+        params: { bookId: id },
+      });
+    }
   };
 
   const handleListenAudiobook = () => {
@@ -55,11 +60,28 @@ export default function BookDetailScreen() {
     });
   };
 
+  if (isLoading || !book) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+          <View />
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   const handleAuthorPress = () => {
     router.push(`/author/${book.authorId}` as any);
   };
 
-  const visibleChapters = chaptersExpanded ? book.chapters : book.chapters.slice(0, 3);
+  const chapters = book.chapters ?? [];
+  const visibleChapters = chaptersExpanded ? chapters : chapters.slice(0, 3);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -247,13 +269,13 @@ export default function BookDetailScreen() {
               </Text>
             </TouchableOpacity>
           ))}
-          {!chaptersExpanded && book.chapters.length > 3 && (
+          {!chaptersExpanded && chapters.length > 3 && (
             <TouchableOpacity
               style={styles.showMoreButton}
               onPress={() => setChaptersExpanded(true)}
             >
               <Text style={[styles.showMoreText, { color: colors.primary }]}>
-                {t('library.seeAll')} ({book.chapters.length})
+                {t('library.seeAll')} ({chapters.length})
               </Text>
             </TouchableOpacity>
           )}

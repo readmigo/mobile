@@ -18,6 +18,7 @@ import { BookmarkPanel } from '@/features/reader/components/BookmarkPanel';
 import { HighlightToolbar } from '@/features/reader/components/HighlightToolbar';
 import { HighlightListPanel } from '@/features/reader/components/HighlightListPanel';
 import { useHighlightStore } from '@/features/reader/stores/highlightStore';
+import { useReadingProgress } from '@/features/reader/hooks/useReadingProgress';
 
 export default function ReaderScreen() {
   const { colors } = useTheme();
@@ -37,6 +38,9 @@ export default function ReaderScreen() {
   const [totalPages, setTotalPages] = useState(1);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+
+  // Reading progress sync
+  const { updateLocation, flush: flushProgress } = useReadingProgress({ bookId });
 
   const bookmarkSheetRef = useRef<BottomSheet>(null);
   const highlightSheetRef = useRef<BottomSheet>(null);
@@ -76,9 +80,11 @@ export default function ReaderScreen() {
     setProgress(prog);
     setCurrentPage(page);
     setTotalPages(total);
-  }, []);
+    updateLocation(cfi, prog);
+  }, [updateLocation]);
 
   const handleClose = () => {
+    flushProgress();
     router.back();
   };
 

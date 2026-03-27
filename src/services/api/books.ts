@@ -113,4 +113,27 @@ export const booksApi = {
     const response = await apiClient.get(`/books/${bookId}/content`);
     return response.data;
   },
+
+  // Recently browsed
+  getRecentlyBrowsed: async (params?: {
+    page?: number;
+    pageSize?: number;
+  }): Promise<ApiResponse<UserBook[]>> => {
+    const response = await apiClient.get('/user/recently-browsed', { params });
+    return response.data;
+  },
+
+  // Favorites
+  getFavoriteBooks: async (params?: {
+    page?: number;
+    pageSize?: number;
+  }): Promise<ApiResponse<UserBook[]>> => {
+    const response = await apiClient.get('/user/favorites', { params });
+    return response.data;
+  },
+
+  toggleFavorite: async (bookId: string): Promise<ApiResponse<{ isFavorite: boolean }>> => {
+    const response = await apiClient.post(`/user/favorites/${bookId}`);
+    return response.data;
+  },
 };

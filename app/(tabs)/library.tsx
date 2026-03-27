@@ -8,119 +8,20 @@ import {
   FlatList,
   Image,
   useWindowDimensions,
+  RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
-
-// --- Mock Data Types ---
-
-interface LibraryBook {
-  id: string;
-  title: string;
-  author: string;
-  coverUrl: string | null;
-  progress: number;
-  isFavorite: boolean;
-  lastReadAt: string;
-}
-
-// --- Mock Data (to be replaced by real API hooks) ---
-
-const mockCurrentlyReading: LibraryBook | null = {
-  id: '1',
-  title: 'The Great Gatsby',
-  author: 'F. Scott Fitzgerald',
-  coverUrl: null,
-  progress: 0.35,
-  isFavorite: false,
-  lastReadAt: '2026-02-18T10:00:00Z',
-};
-
-const mockRecentlyBrowsed: LibraryBook[] = [
-  {
-    id: '2',
-    title: '1984',
-    author: 'George Orwell',
-    coverUrl: null,
-    progress: 0,
-    isFavorite: false,
-    lastReadAt: '2026-02-17T15:00:00Z',
-  },
-  {
-    id: '3',
-    title: 'Pride and Prejudice',
-    author: 'Jane Austen',
-    coverUrl: null,
-    progress: 0,
-    isFavorite: false,
-    lastReadAt: '2026-02-16T12:00:00Z',
-  },
-  {
-    id: '4',
-    title: 'To Kill a Mockingbird',
-    author: 'Harper Lee',
-    coverUrl: null,
-    progress: 0,
-    isFavorite: false,
-    lastReadAt: '2026-02-15T09:00:00Z',
-  },
-  {
-    id: '5',
-    title: 'The Catcher in the Rye',
-    author: 'J.D. Salinger',
-    coverUrl: null,
-    progress: 0,
-    isFavorite: false,
-    lastReadAt: '2026-02-14T08:00:00Z',
-  },
-];
-
-const mockFavoriteBooks: LibraryBook[] = [
-  {
-    id: '6',
-    title: 'Brave New World',
-    author: 'Aldous Huxley',
-    coverUrl: null,
-    progress: 0.8,
-    isFavorite: true,
-    lastReadAt: '2026-02-13T10:00:00Z',
-  },
-  {
-    id: '7',
-    title: 'The Hobbit',
-    author: 'J.R.R. Tolkien',
-    coverUrl: null,
-    progress: 1.0,
-    isFavorite: true,
-    lastReadAt: '2026-02-12T10:00:00Z',
-  },
-  {
-    id: '8',
-    title: 'Fahrenheit 451',
-    author: 'Ray Bradbury',
-    coverUrl: null,
-    progress: 0.5,
-    isFavorite: true,
-    lastReadAt: '2026-02-11T10:00:00Z',
-  },
-];
-
-// --- Placeholder hooks (to be replaced with real API calls) ---
-
-function useCurrentlyReading() {
-  return { data: mockCurrentlyReading };
-}
-
-function useRecentlyBrowsed() {
-  return { data: mockRecentlyBrowsed };
-}
-
-function useFavoriteBooks() {
-  return { data: mockFavoriteBooks };
-}
+import { UserBook } from '@/services/api/books';
+import {
+  useCurrentlyReading,
+  useRecentlyBrowsed,
+  useFavoriteBooks,
+} from '@/features/library/hooks/useLibrary';
 
 // --- Section Header ---
 
@@ -151,16 +52,21 @@ function SectionHeader({ title, onSeeAll, seeAllLabel }: SectionHeaderProps) {
 // --- Currently Reading Section ---
 
 interface CurrentlyReadingSectionProps {
-  book: LibraryBook;
+  userBook: UserBook;
 }
 
-function CurrentlyReadingSection({ book }: CurrentlyReadingSectionProps) {
+function CurrentlyReadingSection({ userBook }: CurrentlyReadingSectionProps) {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const handlePress = useCallback(() => {
-    router.push('/book/reader');
-  }, []);
+    router.push({
+      pathname: '/book/reader',
+      params: { bookId: userBook.bookId, initialCfi: userBook.currentCfi },
+    });
+  }, [userBook.bookId, userBook.currentCfi]);
+
+  const book = userBook.book;
 
   return (
     <View style={styles.sectionContainer}>
@@ -208,13 +114,13 @@ function CurrentlyReadingSection({ book }: CurrentlyReadingSectionProps) {
                     styles.progressFill,
                     {
                       backgroundColor: colors.primary,
-                      width: `${Math.round(book.progress * 100)}%`,
+                      width: `${Math.round(userBook.progress * 100)}%`,
                     },
                   ]}
                 />
               </View>
               <Text style={[styles.progressText, { color: colors.textTertiary }]}>
-                {t('library.progress', { value: Math.round(book.progress * 100) })}
+                {t('library.progress', { value: Math.round(userBook.progress * 100) })}
               </Text>
             </View>
             <TouchableOpacity
@@ -235,7 +141,7 @@ function CurrentlyReadingSection({ book }: CurrentlyReadingSectionProps) {
 // --- Recently Browsed Section ---
 
 interface RecentlyBrowsedSectionProps {
-  books: LibraryBook[];
+  books: UserBook[];
 }
 
 function RecentlyBrowsedSection({ books }: RecentlyBrowsedSectionProps) {
@@ -246,20 +152,16 @@ function RecentlyBrowsedSection({ books }: RecentlyBrowsedSectionProps) {
     router.push(`/book/${bookId}`);
   }, []);
 
-  const handleSeeAll = useCallback(() => {
-    // TODO: navigate to full recently browsed list
-  }, []);
-
   const renderItem = useCallback(
-    ({ item }: { item: LibraryBook }) => (
+    ({ item }: { item: UserBook }) => (
       <TouchableOpacity
         style={styles.recentlyBrowsedItem}
-        onPress={() => handleBookPress(item.id)}
+        onPress={() => handleBookPress(item.bookId)}
         activeOpacity={0.7}
       >
-        {item.coverUrl ? (
+        {item.book.coverUrl ? (
           <Image
-            source={{ uri: item.coverUrl }}
+            source={{ uri: item.book.coverUrl }}
             style={styles.recentlyBrowsedCover}
             resizeMode="cover"
           />
@@ -278,13 +180,13 @@ function RecentlyBrowsedSection({ books }: RecentlyBrowsedSectionProps) {
           style={[styles.recentlyBrowsedTitle, { color: colors.text }]}
           numberOfLines={2}
         >
-          {item.title}
+          {item.book.title}
         </Text>
         <Text
           style={[styles.recentlyBrowsedAuthor, { color: colors.textSecondary }]}
           numberOfLines={1}
         >
-          {item.author}
+          {item.book.author}
         </Text>
       </TouchableOpacity>
     ),
@@ -295,7 +197,6 @@ function RecentlyBrowsedSection({ books }: RecentlyBrowsedSectionProps) {
     <View style={styles.sectionContainer}>
       <SectionHeader
         title={t('library.recentlyBrowsed')}
-        onSeeAll={handleSeeAll}
         seeAllLabel={t('library.seeAll')}
       />
       <FlatList
@@ -313,7 +214,7 @@ function RecentlyBrowsedSection({ books }: RecentlyBrowsedSectionProps) {
 // --- Favorite Books Section ---
 
 interface FavoriteBooksSectionProps {
-  books: LibraryBook[];
+  books: UserBook[];
 }
 
 function FavoriteBooksSection({ books }: FavoriteBooksSectionProps) {
@@ -331,28 +232,23 @@ function FavoriteBooksSection({ books }: FavoriteBooksSectionProps) {
     router.push(`/book/${bookId}`);
   }, []);
 
-  const handleSeeAll = useCallback(() => {
-    // TODO: navigate to full favorites list
-  }, []);
-
   return (
     <View style={styles.sectionContainer}>
       <SectionHeader
         title={t('library.favoriteBooks')}
-        onSeeAll={handleSeeAll}
         seeAllLabel={t('library.seeAll')}
       />
       <View style={styles.favoritesGrid}>
-        {books.map((book) => (
+        {books.map((userBook) => (
           <TouchableOpacity
-            key={book.id}
+            key={userBook.id}
             style={[styles.favoriteItem, { width: itemWidth }]}
-            onPress={() => handleBookPress(book.id)}
+            onPress={() => handleBookPress(userBook.bookId)}
             activeOpacity={0.7}
           >
-            {book.coverUrl ? (
+            {userBook.book.coverUrl ? (
               <Image
-                source={{ uri: book.coverUrl }}
+                source={{ uri: userBook.book.coverUrl }}
                 style={[styles.favoriteCover, { width: itemWidth, height: itemWidth * 1.5 }]}
                 resizeMode="cover"
               />
@@ -375,11 +271,23 @@ function FavoriteBooksSection({ books }: FavoriteBooksSectionProps) {
               style={[styles.favoriteTitle, { color: colors.text }]}
               numberOfLines={2}
             >
-              {book.title}
+              {userBook.book.title}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
+    </View>
+  );
+}
+
+// --- Loading State ---
+
+function LibraryLoadingState() {
+  const { colors } = useTheme();
+
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color={colors.primary} />
     </View>
   );
 }
@@ -419,16 +327,31 @@ function EmptyLibraryState() {
 
 export default function LibraryScreen() {
   const { colors } = useTheme();
-  const { t } = useTranslation();
 
-  const { data: currentlyReading } = useCurrentlyReading();
-  const { data: recentlyBrowsed } = useRecentlyBrowsed();
-  const { data: favoriteBooks } = useFavoriteBooks();
+  const { data: currentlyReading, isLoading: loadingCurrent, refetch: refetchCurrent } = useCurrentlyReading();
+  const { data: recentlyBrowsed, isLoading: loadingRecent, refetch: refetchRecent } = useRecentlyBrowsed();
+  const { data: favoriteBooks, isLoading: loadingFavorites, refetch: refetchFavorites } = useFavoriteBooks();
+
+  const isLoading = loadingCurrent && loadingRecent && loadingFavorites;
+
+  const handleRefresh = useCallback(() => {
+    refetchCurrent();
+    refetchRecent();
+    refetchFavorites();
+  }, [refetchCurrent, refetchRecent, refetchFavorites]);
 
   const hasContent =
     currentlyReading ||
     (recentlyBrowsed && recentlyBrowsed.length > 0) ||
     (favoriteBooks && favoriteBooks.length > 0);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <LibraryLoadingState />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -437,9 +360,16 @@ export default function LibraryScreen() {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={false}
+              onRefresh={handleRefresh}
+              tintColor={colors.primary}
+            />
+          }
         >
           {currentlyReading && (
-            <CurrentlyReadingSection book={currentlyReading} />
+            <CurrentlyReadingSection userBook={currentlyReading} />
           )}
 
           {recentlyBrowsed && recentlyBrowsed.length > 0 && (
@@ -463,22 +393,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingBottom: 32,
+  },
+
+  // Loading
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   // Section Header

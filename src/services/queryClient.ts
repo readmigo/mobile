@@ -33,6 +33,8 @@ export const queryKeys = {
   library: {
     all: ['library'] as const,
     books: ['library', 'books'] as const,
+    recentlyBrowsed: ['library', 'recently-browsed'] as const,
+    favorites: ['library', 'favorites'] as const,
     progress: (bookId: string) => ['library', 'progress', bookId] as const,
   },
 

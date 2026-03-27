@@ -3,3 +3,7 @@ export * from './ReaderControls';
 export * from './TypographyPanel';
 export * from './ReadingStatsOverlay';
 export * from './SearchOverlay';
+export * from './BookmarkPanel';
+export * from './HighlightToolbar';
+export * from './HighlightListPanel';
+export * from './NoteEditor';

@@ -1,33 +1,61 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { EPUBReader } from '@/features/reader';
 import { ReaderControls } from '@/features/reader';
 import { AIExplanationPanel } from '@/features/ai';
+import { BookmarkPanel } from '@/features/reader/components/BookmarkPanel';
+import { HighlightToolbar } from '@/features/reader/components/HighlightToolbar';
+import { HighlightListPanel } from '@/features/reader/components/HighlightListPanel';
+import { useHighlightStore } from '@/features/reader/stores/highlightStore';
 
 export default function ReaderScreen() {
   const { colors } = useTheme();
-  const { bookId, bookUrl } = useLocalSearchParams<{ bookId: string; bookUrl?: string }>();
+  const { bookId, bookUrl, initialCfi } = useLocalSearchParams<{
+    bookId: string;
+    bookUrl?: string;
+    initialCfi?: string;
+  }>();
   const { readerTheme } = useSettingsStore();
 
   const [showMenu, setShowMenu] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [selectedText, setSelectedText] = useState<string | null>(null);
-  const [selectedCfi, setSelectedCfi] = useState<string | null>(null);
+  const [currentCfi, setCurrentCfi] = useState<string | null>(initialCfi ?? null);
   const [progress, setProgress] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAIPanel, setShowAIPanel] = useState(false);
+  const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+
+  const bookmarkSheetRef = useRef<BottomSheet>(null);
+  const highlightSheetRef = useRef<BottomSheet>(null);
+  const epubReaderRef = useRef<{ goToCfi: (cfi: string) => void } | null>(null);
+
+  // Highlight toolbar state
+  const [showHighlightToolbar, setShowHighlightToolbar] = useState(false);
+  const [selectedCfi, setSelectedCfi] = useState<string | null>(null);
+
+  // Bookmark state
+  const addBookmark = useHighlightStore((s) => s.addBookmark);
+  const removeBookmark = useHighlightStore((s) => s.removeBookmark);
+  const getBookBookmarks = useHighlightStore((s) => s.getBookBookmarks);
+
+  const bookmarks = getBookBookmarks(bookId || '');
+  const isCurrentLocationBookmarked = useMemo(
+    () => currentCfi ? bookmarks.some((b) => b.cfiPath === currentCfi) : false,
+    [bookmarks, currentCfi],
+  );
 
   const readerColors = {
     light: { background: '#FFFFFF', text: '#1A1A1A' },
@@ -40,10 +68,11 @@ export default function ReaderScreen() {
   const handleTextSelect = useCallback((text: string, cfi: string) => {
     setSelectedText(text);
     setSelectedCfi(cfi);
-    setShowAIPanel(true);
+    setShowHighlightToolbar(true);
   }, []);
 
   const handleLocationChange = useCallback((cfi: string, prog: number, page: number, total: number) => {
+    setCurrentCfi(cfi);
     setProgress(prog);
     setCurrentPage(page);
     setTotalPages(total);
@@ -57,6 +86,60 @@ export default function ReaderScreen() {
     setShowAIPanel(false);
     setSelectedText(null);
   };
+
+  const handleDismissHighlightToolbar = () => {
+    setShowHighlightToolbar(false);
+    setSelectedText(null);
+    setSelectedCfi(null);
+  };
+
+  const handleHighlightCreated = () => {
+    setShowHighlightToolbar(false);
+  };
+
+  const handleExplainFromToolbar = () => {
+    setShowHighlightToolbar(false);
+    setShowAIPanel(true);
+  };
+
+  const handleTranslateFromToolbar = () => {
+    setShowHighlightToolbar(false);
+    setShowAIPanel(true);
+  };
+
+  const handleOpenHighlights = useCallback(() => {
+    highlightSheetRef.current?.snapToIndex(0);
+  }, []);
+
+  const handleToggleBookmark = useCallback(() => {
+    if (!bookId || !currentCfi) return;
+
+    if (isCurrentLocationBookmarked) {
+      const bookmark = bookmarks.find((b) => b.cfiPath === currentCfi);
+      if (bookmark) {
+        removeBookmark(bookId, bookmark.id);
+      }
+    } else {
+      addBookmark({
+        id: Date.now().toString(),
+        bookId,
+        chapterIndex: currentChapterIndex,
+        paragraphIndex: 0,
+        scrollPercentage: progress / 100,
+        cfiPath: currentCfi,
+        title: `Page ${currentPage}`,
+        createdAt: new Date().toISOString(),
+      });
+    }
+  }, [bookId, currentCfi, isCurrentLocationBookmarked, bookmarks, removeBookmark, addBookmark, currentChapterIndex, progress, currentPage]);
+
+  const handleOpenBookmarks = useCallback(() => {
+    bookmarkSheetRef.current?.snapToIndex(0);
+  }, []);
+
+  const handleNavigateToCfi = useCallback((cfi: string) => {
+    epubReaderRef.current?.goToCfi(cfi);
+  }, []);
 
   return (
     <SafeAreaView
@@ -76,12 +159,25 @@ export default function ReaderScreen() {
         <TouchableOpacity onPress={handleClose}>
           <Ionicons name="close" size={24} color={currentReaderTheme.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: currentReaderTheme.text }]}>
-          The Great Gatsby
-        </Text>
-        <TouchableOpacity onPress={() => setShowSettings(true)}>
-          <Ionicons name="settings-outline" size={24} color={currentReaderTheme.text} />
-        </TouchableOpacity>
+
+        <View style={styles.headerActions}>
+          <TouchableOpacity onPress={handleToggleBookmark} style={styles.headerBtn}>
+            <Ionicons
+              name={isCurrentLocationBookmarked ? 'bookmark' : 'bookmark-outline'}
+              size={22}
+              color={isCurrentLocationBookmarked ? colors.primary : currentReaderTheme.text}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleOpenHighlights} style={styles.headerBtn}>
+            <Ionicons name="color-palette-outline" size={22} color={currentReaderTheme.text} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleOpenBookmarks} style={styles.headerBtn}>
+            <Ionicons name="list-outline" size={22} color={currentReaderTheme.text} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerBtn}>
+            <Ionicons name="settings-outline" size={22} color={currentReaderTheme.text} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Content */}
@@ -93,6 +189,7 @@ export default function ReaderScreen() {
         {bookUrl ? (
           <EPUBReader
             bookUrl={bookUrl}
+            initialCfi={initialCfi}
             onTextSelect={handleTextSelect}
             onLocationChange={handleLocationChange}
           />
@@ -141,6 +238,38 @@ export default function ReaderScreen() {
           onClose={handleDismissAI}
         />
       )}
+
+      {/* Highlight Toolbar (shown on text selection) */}
+      {showHighlightToolbar && selectedText && selectedCfi && bookId && (
+        <HighlightToolbar
+          selectedText={selectedText}
+          selectedCfi={selectedCfi}
+          bookId={bookId}
+          chapterId={`ch-${currentChapterIndex}`}
+          onHighlightCreated={handleHighlightCreated}
+          onExplain={handleExplainFromToolbar}
+          onTranslate={handleTranslateFromToolbar}
+          onDismiss={handleDismissHighlightToolbar}
+        />
+      )}
+
+      {/* Bookmark Panel */}
+      {bookId && (
+        <BookmarkPanel
+          bookId={bookId}
+          sheetRef={bookmarkSheetRef}
+          onNavigateToCfi={handleNavigateToCfi}
+        />
+      )}
+
+      {/* Highlight List Panel */}
+      {bookId && (
+        <HighlightListPanel
+          bookId={bookId}
+          sheetRef={highlightSheetRef}
+          onNavigateToCfi={handleNavigateToCfi}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -161,9 +290,13 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
   },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  headerBtn: {
+    padding: 8,
   },
   contentContainer: {
     flex: 1,

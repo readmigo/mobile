@@ -40,6 +40,15 @@ export default function MeScreen() {
     );
   };
 
+  const readingSection: SettingItem[] = [
+    {
+      id: 'reading-stats',
+      icon: 'stats-chart-outline',
+      title: t('stats.title', { defaultValue: 'Reading Stats' }),
+      onPress: () => router.push('/reading-stats' as any),
+    },
+  ];
+
   const contactUsSection: SettingItem[] = [
     {
       id: 'contact',
@@ -80,6 +89,7 @@ export default function MeScreen() {
   ];
 
   const settingsSections: { title: string; items: SettingItem[] }[] = [
+    { title: t('stats.reading', { defaultValue: 'Reading' }), items: readingSection },
     { title: t('me.contactUsSection', { defaultValue: 'Contact Us' }), items: contactUsSection },
     { title: t('me.legalSection', { defaultValue: 'Legal' }), items: legalSection },
     { title: t('profile.about'), items: aboutSection },

@@ -124,39 +124,6 @@ export function trackReaderSettingChanged(props: {
   trackEvent('reader_setting_changed', props);
 }
 
-// Vocabulary Events
-export function trackWordSaved(props: {
-  word: string;
-  bookId?: string;
-  source: string;
-}) {
-  trackEvent('vocabulary_word_saved', props);
-}
-
-export function trackWordReviewed(props: {
-  wordId: string;
-  masteryLevel: number;
-  result: 'correct' | 'incorrect';
-}) {
-  trackEvent('vocabulary_word_reviewed', props);
-}
-
-// AI Events
-export function trackAIExplainUsed(props: {
-  textLength: number;
-  bookId?: string;
-}) {
-  trackEvent('ai_explain_used', props);
-}
-
-export function trackAITranslateUsed(props: {
-  textLength: number;
-  targetLanguage: string;
-  bookId?: string;
-}) {
-  trackEvent('ai_translate_used', props);
-}
-
 // Onboarding Events
 export function trackOnboardingStepCompleted(props: {
   step: number;

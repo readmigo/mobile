@@ -46,6 +46,31 @@
     "seeAll": "查看全部",
     "finished": "已读完"
   },
+  "dev": {
+    "title": "开发者工具",
+    "appInfo": "应用信息",
+    "version": "版本",
+    "build": "构建号",
+    "environment": "环境",
+    "api": "接口",
+    "baseUrl": "Base URL",
+    "cache": "缓存",
+    "clearQueryCache": "清除查询缓存",
+    "clearStorageAction": "清除本地存储",
+    "clearStorage": {
+      "title": "清除本地存储",
+      "message": "这将移除所有本地缓存的偏好和数据。应用可能行为异常，直到重新登录。是否继续？"
+    },
+    "cleared": {
+      "queryCache": "查询缓存已清除",
+      "storage": "存储已清除"
+    },
+    "unavailable": "开发者工具仅在调试版本中可用"
+  },
+  "settings": {
+    "chooseLanguage": "选择语言",
+    "currentLanguage": "当前：{{language}}"
+  },
   "share": {
     "card": {
       "title": "分享卡片",
@@ -188,7 +213,27 @@
     "about": "关于",
     "rateApp": "给应用评分",
     "privacyPolicy": "隐私政策",
-    "termsOfService": "服务条款"
+    "termsOfService": "服务条款",
+    "edit": "编辑资料",
+    "displayName": "昵称",
+    "displayNamePlaceholder": "你的名字",
+    "email": "邮箱",
+    "basicInfo": "基本信息",
+    "readingPreferences": "阅读偏好",
+    "englishLevel": "英语水平",
+    "minutes": "分钟",
+    "level": {
+      "beginner": "初级",
+      "elementary": "基础",
+      "intermediate": "中级",
+      "upperIntermediate": "中高级",
+      "advanced": "高级"
+    },
+    "error": {
+      "displayNameRequired": "昵称不能为空",
+      "invalidGoal": "每日目标须在 1-600 分钟之间",
+      "saveFailed": "保存失败"
+    }
   },
   "reader": {
     "settings": "阅读器设置",

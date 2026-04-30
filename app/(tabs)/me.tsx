@@ -103,6 +103,23 @@ export default function MeScreen() {
     },
   ];
 
+  const settingsAppSection: SettingItem[] = [
+    {
+      id: 'language',
+      icon: 'language-outline',
+      title: t('profile.language', { defaultValue: 'Language' }),
+      onPress: () => router.push('/language-settings' as any),
+    },
+    ...(__DEV__
+      ? [{
+          id: 'dev-tools',
+          icon: 'code-slash-outline' as IconName,
+          title: t('dev.title', { defaultValue: 'Developer Tools' }),
+          onPress: () => router.push('/dev-tools' as any),
+        }]
+      : []),
+  ];
+
   const contactUsSection: SettingItem[] = [
     {
       id: 'help',
@@ -150,6 +167,7 @@ export default function MeScreen() {
 
   const settingsSections: { title: string; items: SettingItem[] }[] = [
     { title: t('stats.reading', { defaultValue: 'Reading' }), items: readingSection },
+    { title: t('me.appSection', { defaultValue: 'App' }), items: settingsAppSection },
     { title: t('me.contactUsSection', { defaultValue: 'Contact Us' }), items: contactUsSection },
     { title: t('me.legalSection', { defaultValue: 'Legal' }), items: legalSection },
     { title: t('profile.about'), items: aboutSection },
@@ -183,7 +201,7 @@ export default function MeScreen() {
               </Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => router.push('/profile-edit' as any)}>
               <Ionicons name="create-outline" size={22} color={colors.textSecondary} />
             </TouchableOpacity>
           )}

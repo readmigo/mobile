@@ -46,6 +46,31 @@
     "seeAll": "See All",
     "finished": "Finished"
   },
+  "dev": {
+    "title": "Developer Tools",
+    "appInfo": "App Info",
+    "version": "Version",
+    "build": "Build",
+    "environment": "Environment",
+    "api": "API",
+    "baseUrl": "Base URL",
+    "cache": "Cache",
+    "clearQueryCache": "Clear Query Cache",
+    "clearStorageAction": "Clear AsyncStorage",
+    "clearStorage": {
+      "title": "Clear AsyncStorage",
+      "message": "This will remove all locally cached preferences and data. The app may behave unexpectedly until you log in again. Continue?"
+    },
+    "cleared": {
+      "queryCache": "Query cache cleared",
+      "storage": "Storage cleared"
+    },
+    "unavailable": "Developer tools are only available in debug builds"
+  },
+  "settings": {
+    "chooseLanguage": "Choose Language",
+    "currentLanguage": "Current: {{language}}"
+  },
   "share": {
     "card": {
       "title": "Share Card",
@@ -188,7 +213,27 @@
     "about": "About",
     "rateApp": "Rate This App",
     "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service"
+    "termsOfService": "Terms of Service",
+    "edit": "Edit Profile",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "Your name",
+    "email": "Email",
+    "basicInfo": "Basic Info",
+    "readingPreferences": "Reading Preferences",
+    "englishLevel": "English Level",
+    "minutes": "min",
+    "level": {
+      "beginner": "Beginner",
+      "elementary": "Elementary",
+      "intermediate": "Intermediate",
+      "upperIntermediate": "Upper Intermediate",
+      "advanced": "Advanced"
+    },
+    "error": {
+      "displayNameRequired": "Display name is required",
+      "invalidGoal": "Daily goal must be between 1 and 600 minutes",
+      "saveFailed": "Failed to save profile"
+    }
   },
   "reader": {
     "settings": "Reader Settings",

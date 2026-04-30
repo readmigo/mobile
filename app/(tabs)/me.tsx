@@ -128,10 +128,16 @@ export default function MeScreen() {
       onPress: () => router.push('/help' as any),
     },
     {
+      id: 'messages',
+      icon: 'chatbubbles-outline',
+      title: t('messaging.title', { defaultValue: 'Messages' }),
+      onPress: () => router.push('/messages' as any),
+    },
+    {
       id: 'contact',
       icon: 'chatbubble-outline',
       title: t('me.contactUs', { defaultValue: 'Contact Us' }),
-      onPress: () => router.push('/chat' as any),
+      onPress: () => router.push('/new-message' as any),
     },
   ];
 

@@ -46,6 +46,29 @@
     "seeAll": "See All",
     "finished": "Finished"
   },
+  "messaging": {
+    "title": "Messages",
+    "newMessage": "New Message",
+    "noMessages": "No messages yet",
+    "noMessagesHint": "Start a new conversation to get help or share feedback",
+    "subject": "Subject (optional)",
+    "subjectPlaceholder": "Brief summary",
+    "content": "Description",
+    "contentPlaceholder": "Describe what you experienced or your suggestion",
+    "category": {
+      "title": "Category",
+      "bug": "Bug Report",
+      "featureRequest": "Feature Request",
+      "uiUx": "UI / UX",
+      "content": "Content Issue",
+      "performance": "Performance",
+      "other": "Other"
+    },
+    "error": {
+      "contentRequired": "Please describe your issue",
+      "sendFailed": "Failed to send message"
+    }
+  },
   "bookLists": {
     "categories": "Categories",
     "noCategories": "No categories available",

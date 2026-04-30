@@ -46,6 +46,29 @@
     "seeAll": "查看全部",
     "finished": "已读完"
   },
+  "messaging": {
+    "title": "消息",
+    "newMessage": "新消息",
+    "noMessages": "还没有消息",
+    "noMessagesHint": "发起新对话以获取帮助或反馈意见",
+    "subject": "主题（可选）",
+    "subjectPlaceholder": "简短摘要",
+    "content": "描述",
+    "contentPlaceholder": "请描述你遇到的问题或建议",
+    "category": {
+      "title": "分类",
+      "bug": "Bug 反馈",
+      "featureRequest": "功能建议",
+      "uiUx": "UI / 交互",
+      "content": "内容问题",
+      "performance": "性能问题",
+      "other": "其他"
+    },
+    "error": {
+      "contentRequired": "请描述你的问题",
+      "sendFailed": "发送失败"
+    }
+  },
   "bookLists": {
     "categories": "分类",
     "noCategories": "暂无分类",

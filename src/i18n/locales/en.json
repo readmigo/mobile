@@ -46,6 +46,11 @@
     "seeAll": "See All",
     "finished": "Finished"
   },
+  "bookLists": {
+    "categories": "Categories",
+    "noCategories": "No categories available",
+    "seeAll": "See All"
+  },
   "badge": {
     "title": "Badge",
     "share": "Share",

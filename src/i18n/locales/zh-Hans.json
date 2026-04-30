@@ -46,6 +46,11 @@
     "seeAll": "查看全部",
     "finished": "已读完"
   },
+  "bookLists": {
+    "categories": "分类",
+    "noCategories": "暂无分类",
+    "seeAll": "查看全部"
+  },
   "badge": {
     "title": "徽章",
     "share": "分享",

@@ -248,6 +248,17 @@ const CategoryMenu = memo(function CategoryMenu({ categories }: CategoryMenuProp
           </Text>
         </TouchableOpacity>
       ))}
+      <TouchableOpacity
+        style={styles.categoryMenuItem}
+        onPress={() => router.push('/categories' as any)}
+      >
+        <View style={[styles.categoryIconCircle, { backgroundColor: colors.primary + '1A' }]}>
+          <Ionicons name="grid-outline" size={20} color={colors.primary} />
+        </View>
+        <Text style={[styles.categoryMenuLabel, { color: colors.primary }]} numberOfLines={1}>
+          See All
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 });

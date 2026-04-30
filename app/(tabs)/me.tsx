@@ -48,6 +48,12 @@ export default function MeScreen() {
       onPress: () => router.push('/reading-stats' as any),
     },
     {
+      id: 'bookmarks',
+      icon: 'bookmark-outline',
+      title: t('bookmarks.title', { defaultValue: 'Bookmarks' }),
+      onPress: () => router.push('/bookmarks' as any),
+    },
+    {
       id: 'community',
       icon: 'chatbubbles-outline',
       title: t('agora.title', { defaultValue: 'Community' }),

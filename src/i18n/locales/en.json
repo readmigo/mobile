@@ -46,6 +46,27 @@
     "seeAll": "See All",
     "finished": "Finished"
   },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "searchPrompt": "Search by text, note, or book title",
+    "filter": {
+      "bookmark": "Bookmarks",
+      "highlight": "Highlights",
+      "note": "Notes"
+    },
+    "empty": {
+      "all": "No bookmarks yet",
+      "allHint": "Save bookmarks and highlights while reading",
+      "search": "No matches found",
+      "searchHint": "Try a different keyword"
+    },
+    "deleteTitle": "Delete entry",
+    "deleteConfirm": "Remove this bookmark or highlight permanently?",
+    "cantNavigate": {
+      "title": "Cannot navigate",
+      "message": "This entry has no saved position."
+    }
+  },
   "bookshelf": {
     "title": "Bookshelf",
     "search": "Search bookshelf",

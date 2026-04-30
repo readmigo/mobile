@@ -46,6 +46,27 @@
     "seeAll": "查看全部",
     "finished": "已读完"
   },
+  "bookmarks": {
+    "title": "书签与笔记",
+    "searchPrompt": "搜索文本、笔记或书名",
+    "filter": {
+      "bookmark": "书签",
+      "highlight": "高亮",
+      "note": "笔记"
+    },
+    "empty": {
+      "all": "还没有任何标注",
+      "allHint": "在阅读时保存书签和高亮",
+      "search": "未找到结果",
+      "searchHint": "请尝试其他关键词"
+    },
+    "deleteTitle": "删除条目",
+    "deleteConfirm": "永久移除这条书签或高亮？",
+    "cantNavigate": {
+      "title": "无法跳转",
+      "message": "该条目没有保存阅读位置。"
+    }
+  },
   "bookshelf": {
     "title": "我的书架",
     "search": "搜索书架",

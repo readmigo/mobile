@@ -36,7 +36,7 @@ export default function EmailLoginScreen() {
 
     try {
       await login({ email: email.trim(), password });
-      router.replace('/(tabs)/library');
+      router.replace('/(tabs)/bookshelf' as any);
     } catch (err: any) {
       const msg = err.response?.data?.message || t('auth.loginFailed', { defaultValue: 'Login failed. Please try again.' });
       setError(msg);

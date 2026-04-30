@@ -91,7 +91,7 @@ export default function LoginScreen() {
           provider: 'google',
           idToken: result.idToken,
         });
-        router.replace('/(tabs)/library');
+        router.replace('/(tabs)/bookshelf' as any);
       }
     } catch (err: any) {
       setError(err.message || 'Google Sign In failed. Please try again.');
@@ -111,7 +111,7 @@ export default function LoginScreen() {
         idToken: result.idToken,
         nonce: result.nonce,
       });
-      router.replace('/(tabs)/library');
+      router.replace('/(tabs)/bookshelf' as any);
     } catch (err: any) {
       if (!err.message?.includes('cancelled')) {
         setError(err.message || 'Apple Sign In failed. Please try again.');
@@ -137,7 +137,7 @@ export default function LoginScreen() {
 
   const handleGuestMode = () => {
     enterGuestMode();
-    router.replace('/(tabs)/library');
+    router.replace('/(tabs)/bookshelf' as any);
   };
 
   const isButtonDisabled = isLoading || signingIn;

@@ -46,6 +46,47 @@
     "seeAll": "See All",
     "finished": "Finished"
   },
+  "bookshelf": {
+    "title": "Bookshelf",
+    "search": "Search bookshelf",
+    "itemCount": "{{count}} books",
+    "viewAsShelf": "View as Shelf",
+    "viewAsList": "View as List",
+    "sortBy": "Sort By",
+    "sort": {
+      "manual": "Manual",
+      "recent": "Recently Read",
+      "title": "Title",
+      "author": "Author",
+      "addedDate": "Date Added"
+    },
+    "selectBooks": "Select Books",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "selectedCount": "{{count}} of {{total}} selected",
+    "delete": {
+      "confirmTitle": "Remove Books",
+      "confirmMessage": "Remove {{count}} book(s) from your bookshelf? This won't delete the books from the catalog."
+    },
+    "empty": {
+      "title": "Your bookshelf is empty",
+      "subtitle": "Add books from Discover to start your reading journey"
+    },
+    "tip": {
+      "add": {
+        "title": "Add Books",
+        "description": "Browse the bookstore and add books to your shelf"
+      },
+      "sort": {
+        "title": "Sort Your Way",
+        "description": "Order by recent, title, author, or arrange manually"
+      },
+      "edit": {
+        "title": "Edit Mode",
+        "description": "Multi-select to remove or organize books at once"
+      }
+    }
+  },
   "discover": {
     "title": "Bookstore",
     "searchPlaceholder": "Search books, authors...",

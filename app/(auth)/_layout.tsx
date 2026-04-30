@@ -6,7 +6,7 @@ export default function AuthLayout() {
 
   // Already authenticated or in guest mode, redirect to main app
   if (isAuthenticated || isGuestMode) {
-    return <Redirect href="/(tabs)/library" />;
+    return <Redirect href={'/(tabs)/bookshelf' as any} />;
   }
 
   return (

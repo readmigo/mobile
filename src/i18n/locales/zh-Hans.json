@@ -33,8 +33,8 @@
     "privacyPolicy": "隐私政策"
   },
   "library": {
-    "title": "书架",
-    "emptyTitle": "书架是空的",
+    "title": "书库",
+    "emptyTitle": "书库是空的",
     "emptySubtitle": "发现书籍，开始您的阅读之旅",
     "discoverBooks": "发现书籍",
     "continueReading": "继续阅读",
@@ -45,6 +45,47 @@
     "favoriteBooks": "收藏书籍",
     "seeAll": "查看全部",
     "finished": "已读完"
+  },
+  "bookshelf": {
+    "title": "我的书架",
+    "search": "搜索书架",
+    "itemCount": "{{count}} 本书",
+    "viewAsShelf": "切换为书架视图",
+    "viewAsList": "切换为列表视图",
+    "sortBy": "排序方式",
+    "sort": {
+      "manual": "手动排序",
+      "recent": "最近阅读",
+      "title": "标题",
+      "author": "作者",
+      "addedDate": "添加时间"
+    },
+    "selectBooks": "选择书籍",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "selectedCount": "已选 {{count}} / {{total}}",
+    "delete": {
+      "confirmTitle": "移除书籍",
+      "confirmMessage": "确定从书架移除选中的 {{count}} 本书？这不会从书目中删除。"
+    },
+    "empty": {
+      "title": "书架空空如也",
+      "subtitle": "去「发现」添加书籍，开启你的阅读之旅"
+    },
+    "tip": {
+      "add": {
+        "title": "添加书籍",
+        "description": "在「发现」中浏览书目并加入书架"
+      },
+      "sort": {
+        "title": "灵活排序",
+        "description": "按最近阅读、标题、作者排序，或手动调整"
+      },
+      "edit": {
+        "title": "编辑模式",
+        "description": "多选批量移除或整理书籍"
+      }
+    }
   },
   "discover": {
     "title": "书城",

@@ -46,6 +46,13 @@
     "seeAll": "查看全部",
     "finished": "已读完"
   },
+  "series": {
+    "title": "系列",
+    "loadError": "加载系列失败",
+    "booksInSeries": "系列共 {{count}} 本",
+    "words": "{{count}} 字",
+    "wordsK": "{{count}}k 字"
+  },
   "bookmarks": {
     "title": "书签与笔记",
     "searchPrompt": "搜索文本、笔记或书名",

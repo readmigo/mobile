@@ -46,6 +46,13 @@
     "seeAll": "See All",
     "finished": "Finished"
   },
+  "series": {
+    "title": "Series",
+    "loadError": "Failed to load series",
+    "booksInSeries": "{{count}} books in series",
+    "words": "{{count}} words",
+    "wordsK": "{{count}}k words"
+  },
   "bookmarks": {
     "title": "Bookmarks",
     "searchPrompt": "Search by text, note, or book title",

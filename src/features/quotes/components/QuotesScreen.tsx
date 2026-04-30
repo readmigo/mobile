@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,23 +6,29 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  Share,
   RefreshControl,
 } from 'react-native';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import { quotesApi, Quote } from '@/services/api/quotes';
+import {
+  ShareCardSheet,
+  ShareCardContent,
+} from '@/features/sharecard';
 
-function QuoteCard({ quote, onToggleFavorite }: { quote: Quote; onToggleFavorite: (id: string) => void }) {
+function QuoteCard({
+  quote,
+  onToggleFavorite,
+  onShare,
+}: {
+  quote: Quote;
+  onToggleFavorite: (id: string) => void;
+  onShare: (quote: Quote) => void;
+}) {
   const { colors } = useTheme();
-
-  const handleShare = async () => {
-    await Share.share({
-      message: `"${quote.text}" — ${quote.author}${quote.source ? `, ${quote.source}` : ''}`,
-    });
-  };
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface }]}>
@@ -41,7 +47,7 @@ function QuoteCard({ quote, onToggleFavorite }: { quote: Quote; onToggleFavorite
               color={quote.isFavorite ? '#E53935' : colors.textTertiary}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleShare} hitSlop={8}>
+          <TouchableOpacity onPress={() => onShare(quote)} hitSlop={8}>
             <Ionicons name="share-outline" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
@@ -55,6 +61,18 @@ export function QuotesScreen() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<'daily' | 'browse' | 'favorites'>('daily');
+  const shareSheetRef = useRef<BottomSheet>(null);
+  const [shareContent, setShareContent] = useState<ShareCardContent | null>(null);
+
+  const handleOpenShareCard = useCallback((quote: Quote) => {
+    setShareContent({
+      text: quote.text,
+      author: quote.author,
+      bookTitle: quote.source,
+      source: 'quote',
+    });
+    shareSheetRef.current?.snapToIndex(0);
+  }, []);
 
   const { data: daily, isLoading: loadingDaily } = useQuery({
     queryKey: ['quotes', 'daily'],
@@ -87,8 +105,14 @@ export function QuotesScreen() {
   ];
 
   const renderItem = useCallback(
-    ({ item }: { item: Quote }) => <QuoteCard quote={item} onToggleFavorite={toggleFav} />,
-    [toggleFav],
+    ({ item }: { item: Quote }) => (
+      <QuoteCard
+        quote={item}
+        onToggleFavorite={toggleFav}
+        onShare={handleOpenShareCard}
+      />
+    ),
+    [toggleFav, handleOpenShareCard],
   );
 
   const isLoading = tab === 'daily' ? loadingDaily : tab === 'browse' ? loadingBrowse : loadingFavorites;
@@ -117,7 +141,11 @@ export function QuotesScreen() {
         </View>
       ) : tab === 'daily' && daily ? (
         <View style={styles.dailyContainer}>
-          <QuoteCard quote={daily} onToggleFavorite={toggleFav} />
+          <QuoteCard
+            quote={daily}
+            onToggleFavorite={toggleFav}
+            onShare={handleOpenShareCard}
+          />
         </View>
       ) : (
         <FlatList
@@ -145,6 +173,8 @@ export function QuotesScreen() {
           }
         />
       )}
+
+      <ShareCardSheet sheetRef={shareSheetRef} content={shareContent} />
     </View>
   );
 }

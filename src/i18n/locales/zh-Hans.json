@@ -46,6 +46,22 @@
     "seeAll": "查看全部",
     "finished": "已读完"
   },
+  "share": {
+    "card": {
+      "title": "分享卡片",
+      "share": "分享"
+    },
+    "style": {
+      "light": "明亮",
+      "dark": "暗夜",
+      "warm": "暖阳",
+      "vintage": "复古",
+      "nature": "自然",
+      "elegant": "典雅",
+      "ocean": "海洋",
+      "sunset": "落日"
+    }
+  },
   "series": {
     "title": "系列",
     "loadError": "加载系列失败",

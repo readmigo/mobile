@@ -46,6 +46,22 @@
     "seeAll": "See All",
     "finished": "Finished"
   },
+  "share": {
+    "card": {
+      "title": "Share Card",
+      "share": "Share"
+    },
+    "style": {
+      "light": "Light",
+      "dark": "Dark",
+      "warm": "Warm",
+      "vintage": "Vintage",
+      "nature": "Nature",
+      "elegant": "Elegant",
+      "ocean": "Ocean",
+      "sunset": "Sunset"
+    }
+  },
   "series": {
     "title": "Series",
     "loadError": "Failed to load series",

@@ -46,6 +46,53 @@
     "seeAll": "See All",
     "finished": "Finished"
   },
+  "badge": {
+    "title": "Badge",
+    "share": "Share",
+    "shareMessage": "I just earned the “{{name}}” badge on Readmigo!\n{{description}}",
+    "earnedOn": "Earned on {{date}}",
+    "progress": "Progress",
+    "notFound": "Badge not found",
+    "points": "pts",
+    "level": {
+      "current": "Current",
+      "footer": "Perks unlock automatically as you level up.",
+      "formula": "Earn points by reading, collecting badges, and engaging",
+      "pointsToNext": "{{count}} pts to next level",
+      "newcomer": "Newcomer",
+      "youth": "Youth",
+      "expert": "Expert",
+      "voyager": "Voyager",
+      "walker": "Walker",
+      "master": "Master",
+      "grandmaster": "Grandmaster",
+      "benefits": {
+        "title": "Level Benefits"
+      },
+      "perk": {
+        "founderBadge": "Founder badge",
+        "basicStats": "Basic reading stats",
+        "wall3": "Showcase 3 medals",
+        "shareCard": "Share cards",
+        "readingGoal": "Reading goal tracking",
+        "wall6": "Showcase 6 medals",
+        "shareStyles3": "3 share card styles",
+        "agoraLevel": "Level badge in community",
+        "avatarFrame": "Avatar frame",
+        "wall9": "Showcase 9 medals",
+        "shareStylesAll": "All share card styles",
+        "particleEffect": "Particle effects",
+        "agoraBadge": "Special community badge",
+        "profileColor": "Profile color customization",
+        "annualTemplate": "Premium annual report",
+        "diamondFrame": "Diamond avatar frame",
+        "wallUnlimited": "Unlimited medals on wall",
+        "legendFrame": "Legendary frame",
+        "goldName": "Gold name in community",
+        "allPerks": "All perks unlocked"
+      }
+    }
+  },
   "dev": {
     "title": "Developer Tools",
     "appInfo": "App Info",

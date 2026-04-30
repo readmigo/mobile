@@ -46,6 +46,53 @@
     "seeAll": "查看全部",
     "finished": "已读完"
   },
+  "badge": {
+    "title": "徽章",
+    "share": "分享",
+    "shareMessage": "我刚刚在 Readmigo 解锁了「{{name}}」徽章！\n{{description}}",
+    "earnedOn": "获得于 {{date}}",
+    "progress": "进度",
+    "notFound": "徽章未找到",
+    "points": "分",
+    "level": {
+      "current": "当前等级",
+      "footer": "升级后特权自动解锁。",
+      "formula": "通过阅读、收集徽章、社区互动获得积分",
+      "pointsToNext": "距下一级还差 {{count}} 分",
+      "newcomer": "初学者",
+      "youth": "青年",
+      "expert": "高手",
+      "voyager": "航海家",
+      "walker": "行者",
+      "master": "大师",
+      "grandmaster": "宗师",
+      "benefits": {
+        "title": "等级特权"
+      },
+      "perk": {
+        "founderBadge": "开荒徽章",
+        "basicStats": "基础阅读统计",
+        "wall3": "陈列 3 枚徽章",
+        "shareCard": "分享卡片",
+        "readingGoal": "阅读目标追踪",
+        "wall6": "陈列 6 枚徽章",
+        "shareStyles3": "3 种分享卡样式",
+        "agoraLevel": "社区等级标识",
+        "avatarFrame": "头像框",
+        "wall9": "陈列 9 枚徽章",
+        "shareStylesAll": "全部分享卡样式",
+        "particleEffect": "粒子特效",
+        "agoraBadge": "社区专属徽章",
+        "profileColor": "个人资料配色",
+        "annualTemplate": "高级年度报告模板",
+        "diamondFrame": "钻石头像框",
+        "wallUnlimited": "徽章墙无上限",
+        "legendFrame": "传奇头像框",
+        "goldName": "社区金色昵称",
+        "allPerks": "所有特权解锁"
+      }
+    }
+  },
   "dev": {
     "title": "开发者工具",
     "appInfo": "应用信息",

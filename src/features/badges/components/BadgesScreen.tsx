@@ -10,16 +10,21 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import { badgesApi, Badge } from '@/services/api/badges';
 
-function BadgeCard({ badge }: { badge: Badge }) {
+function BadgeCard({ badge, onPress }: { badge: Badge; onPress: () => void }) {
   const { colors } = useTheme();
 
   return (
-    <View style={[styles.badgeCard, { backgroundColor: colors.surface }]}>
+    <TouchableOpacity
+      style={[styles.badgeCard, { backgroundColor: colors.surface }]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
       <View style={[styles.badgeIcon, { opacity: badge.isUnlocked ? 1 : 0.35 }]}>
         {badge.iconUrl ? (
           <Image source={{ uri: badge.iconUrl }} style={styles.badgeImage} resizeMode="contain" />
@@ -51,7 +56,7 @@ function BadgeCard({ badge }: { badge: Badge }) {
           </Text>
         </View>
       ) : null}
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -81,7 +86,10 @@ export function BadgesScreen() {
   const renderItem = useCallback(
     ({ item }: { item: Badge }) => (
       <View style={{ width: itemWidth }}>
-        <BadgeCard badge={item} />
+        <BadgeCard
+          badge={item}
+          onPress={() => router.push(`/badges/${item.id}` as any)}
+        />
       </View>
     ),
     [itemWidth],
@@ -106,12 +114,23 @@ export function BadgesScreen() {
       {/* Summary */}
       <View style={[styles.summary, { backgroundColor: colors.surface }]}>
         <Ionicons name="trophy" size={28} color="#FFB300" />
-        <Text style={[styles.summaryText, { color: colors.text }]}>
-          {unlockedCount} / {totalCount}
-        </Text>
-        <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>
-          {t('badges.earned', { defaultValue: 'badges earned' })}
-        </Text>
+        <View style={styles.summaryInfo}>
+          <Text style={[styles.summaryText, { color: colors.text }]}>
+            {unlockedCount} / {totalCount}
+          </Text>
+          <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>
+            {t('badges.earned', { defaultValue: 'badges earned' })}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={[styles.levelsButton, { backgroundColor: colors.primary + '15' }]}
+          onPress={() => router.push('/badge-levels' as any)}
+        >
+          <Ionicons name="shield" size={14} color={colors.primary} />
+          <Text style={[styles.levelsButtonText, { color: colors.primary }]}>
+            {t('badge.level.benefits.title', { defaultValue: 'Levels' })}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* Filters */}
@@ -159,13 +178,31 @@ const styles = StyleSheet.create({
   summary: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
     margin: 16,
     padding: 16,
     borderRadius: 14,
   },
+  summaryInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 6,
+  },
   summaryText: { fontSize: 22, fontWeight: '700' },
   summaryLabel: { fontSize: 14 },
+  levelsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  levelsButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
   filterRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 12 },
   filterChip: { paddingVertical: 6, paddingHorizontal: 14, borderRadius: 8 },
   grid: { paddingHorizontal: 16, paddingBottom: 32 },

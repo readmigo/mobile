@@ -1,25 +1,25 @@
-# Mobile — React Native 跨平台应用
+# Mobile — React Native Cross-Platform App
 
-Readmigo Mobile 是一款基于 React Native 和 Expo 的跨平台应用，为 iOS 和 Android 提供统一代码库。为英文学习者提供阅读、词汇学习和音频体验。
+Readmigo Mobile is a cross-platform application built on React Native and Expo, providing a unified codebase for iOS and Android. It offers reading, vocabulary learning, and audio experiences for English learners.
 
-## 角色定位
+## Role
 
-Mobile 是原生平台（iOS、Android）的跨平台备选方案。共享 API 和业务逻辑，使用 Expo 托管工作流加速开发迭代。与 iOS（Swift）和 Android（Kotlin）形成平台三角。
+Mobile is a cross-platform alternative to the native platforms (iOS, Android). It shares APIs and business logic and uses the Expo managed workflow to accelerate development iteration. Together with iOS (Swift) and Android (Kotlin), it forms a platform triangle.
 
-## 技术栈
+## Tech Stack
 
-- **框架**: React Native 0.81+
-- **管理器**: Expo ~54.0.30
-- **路由**: Expo Router ~6.0
-- **语言**: TypeScript
-- **状态管理**: Zustand
-- **样式**: NativeWind（React Native Tailwind）
-- **网络**: Axios + React Query
-- **离线存储**: Drizzle ORM + Expo SQLite
-- **音频**: Expo AV（音乐播放）
-- **推送**: Expo Notifications
+- **Framework**: React Native 0.81+
+- **Manager**: Expo ~54.0.30
+- **Routing**: Expo Router ~6.0
+- **Language**: TypeScript
+- **State Management**: Zustand
+- **Styling**: NativeWind (Tailwind for React Native)
+- **Networking**: Axios + React Query
+- **Offline Storage**: Drizzle ORM + Expo SQLite
+- **Audio**: Expo AV (audio playback)
+- **Push Notifications**: Expo Notifications
 
-## 架构
+## Architecture
 
 ```mermaid
 graph LR
@@ -34,133 +34,133 @@ graph LR
     style E fill:#FFB84D
 ```
 
-| 层级 | 职责 |
+| Layer | Responsibility |
 |------|------|
-| Expo Router | 基于文件系统的路由 |
-| App / Components | 页面与 UI 组件库 |
-| Hooks | 自定义逻辑钩子（数据获取、本地化） |
-| Stores | Zustand 全局状态 |
-| API | Axios HTTP 客户端 |
+| Expo Router | File-system based routing |
+| App / Components | Pages and UI component library |
+| Hooks | Custom logic hooks (data fetching, localization) |
+| Stores | Zustand global state |
+| API | Axios HTTP client |
 
-## 目录结构
+## Directory Structure
 
 ```
 mobile/
-├── app/                            # Expo Router 页面（文件即路由）
-│   ├── (auth)/                     # 认证堆栈
+├── app/                            # Expo Router pages (file-based routing)
+│   ├── (auth)/                     # Auth stack
 │   │   ├── login.tsx
 │   │   └── signup.tsx
-│   ├── (main)/                     # 主应用堆栈
-│   │   ├── library.tsx             # 书库
-│   │   ├── reader/[bookId].tsx     # 阅读器
-│   │   └── profile.tsx             # 个人资料
-│   ├── _layout.tsx                 # 根布局
-│   └── +html.tsx                   # Web 支持
+│   ├── (main)/                     # Main app stack
+│   │   ├── library.tsx             # Library
+│   │   ├── reader/[bookId].tsx     # Reader
+│   │   └── profile.tsx             # Profile
+│   ├── _layout.tsx                 # Root layout
+│   └── +html.tsx                   # Web support
 ├── src/
-│   ├── components/                 # React Native 组件
-│   │   ├── ui/                     # 基础 UI（按钮、输入框等）
-│   │   ├── reader/                 # 阅读器特定组件
+│   ├── components/                 # React Native components
+│   │   ├── ui/                     # Base UI (buttons, inputs, etc.)
+│   │   ├── reader/                 # Reader-specific components
 │   │   └── ...
-│   ├── hooks/                      # 自定义逻辑钩子
+│   ├── hooks/                      # Custom logic hooks
 │   │   ├── useBook.ts
 │   │   ├── useAuth.ts
 │   │   └── useReading.ts
-│   ├── stores/                     # Zustand 状态管理
+│   ├── stores/                     # Zustand state management
 │   │   ├── authStore.ts
 │   │   ├── libraryStore.ts
 │   │   └── userStore.ts
-│   ├── lib/                        # 工具函数
-│   │   ├── api.ts                  # Axios 客户端
-│   │   ├── db.ts                   # SQLite 数据库
-│   │   └── logger.ts               # 日志
-│   └── types/                      # TypeScript 类型定义
-├── assets/                         # 图片、字体、本地化
+│   ├── lib/                        # Utility functions
+│   │   ├── api.ts                  # Axios client
+│   │   ├── db.ts                   # SQLite database
+│   │   └── logger.ts               # Logging
+│   └── types/                      # TypeScript type definitions
+├── assets/                         # Images, fonts, localization
 │   ├── images/
 │   ├── fonts/
 │   └── locales/
 ├── ios/                            # Expo managed iOS
 ├── android/                        # Expo managed Android
-├── app.json                        # Expo 配置
-├── eas.json                        # EAS Build 配置
-├── package.json                    # 依赖管理
-└── tsconfig.json                   # TypeScript 配置
+├── app.json                        # Expo configuration
+├── eas.json                        # EAS Build configuration
+├── package.json                    # Dependency management
+└── tsconfig.json                   # TypeScript configuration
 ```
 
-## 本地开发
+## Local Development
 
-### 环境要求
+### Requirements
 
 - **Node.js**: 18+
 - **pnpm**: 8+
-- **Expo CLI**: 最新版本（`pnpm install -g expo-cli`）
-- **iOS**: Xcode 15.0+（测试 iOS 功能）
-- **Android**: Android Studio 2024.1+（测试 Android）
+- **Expo CLI**: latest version (`pnpm install -g expo-cli`)
+- **iOS**: Xcode 15.0+ (for testing iOS features)
+- **Android**: Android Studio 2024.1+ (for testing Android)
 
-### 安装与运行
+### Install and Run
 
 ```bash
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 启动 Expo 开发服务器
+# Start the Expo development server
 pnpm start
 
-# 在 iOS 模拟器运行
+# Run on the iOS simulator
 pnpm ios
 
-# 在 Android 模拟器运行
+# Run on the Android emulator
 pnpm android
 
-# Web 支持（限定功能）
+# Web support (limited features)
 pnpm web
 
-# 代码检查与类型检查
+# Linting and type checking
 pnpm lint
 pnpm typecheck
 ```
 
-按照 Expo 提示扫描 QR 码，在物理设备上使用 Expo Go 应用测试。
+Follow the Expo prompts to scan the QR code and test on a physical device using the Expo Go app.
 
-## 部署
+## Deployment
 
-使用 EAS（Expo Application Services）构建和发布：
+Build and release with EAS (Expo Application Services):
 
 ```bash
-# 为 iOS 构建
+# Build for iOS
 eas build --platform ios
 
-# 为 Android 构建
+# Build for Android
 eas build --platform android
 
-# 同时为两个平台构建
+# Build for both platforms
 eas build --platform all
 
-# 提交到 App Store 和 Google Play
+# Submit to the App Store and Google Play
 eas submit --platform ios
 eas submit --platform android
 ```
 
-配置位于 `eas.json`，包括 iOS 签名和 Android 签名信息。
+The configuration lives in `eas.json` and includes iOS signing and Android signing details.
 
-## 环境变量
+## Environment Variables
 
-核心环境变量（`.env` 或 GitHub Secrets）：
+Core environment variables (`.env` or GitHub Secrets):
 
-- `API_BASE_URL` — 后端 API 端点
-- `SENTRY_DSN` — 错误跟踪
-- `POSTHOG_API_KEY` — 分析
-- `HMAC_SECRET` — API 请求签名
+- `API_BASE_URL` — backend API endpoint
+- `SENTRY_DSN` — error tracking
+- `POSTHOG_API_KEY` — analytics
+- `HMAC_SECRET` — API request signing
 
-## 相关仓库
+## Related Repos
 
-- **ios** — 原生 iOS 应用（Swift + SwiftUI）
-- **android** — 原生 Android 应用（Kotlin + Compose）
-- **api** — NestJS 后端 API
-- **web** — Next.js Web 应用
+- **ios** — Native iOS app (Swift + SwiftUI)
+- **android** — Native Android app (Kotlin + Compose)
+- **api** — NestJS backend API
+- **web** — Next.js web app
 
-## 文档
+## Documentation
 
-- 📚 在线文档：https://docs.readmigo.app
-- Expo 官方文档：https://docs.expo.dev
-- iOS Bundle ID：`rn.readmigo.app`
-- Android Package：`com.readmigo.app`
+- Online docs: https://docs.readmigo.app
+- Expo official docs: https://docs.expo.dev
+- iOS Bundle ID: `rn.readmigo.app`
+- Android Package: `com.readmigo.app`

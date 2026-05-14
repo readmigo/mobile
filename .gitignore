@@ -36,9 +36,12 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# generated native folders
-/ios
-/android
+# Native build artifacts (keep ios/ and android/ tracked for Bare workflow)
+ios/Pods/
+ios/build/
+android/build/
+android/app/build/
+android/.gradle/
 
 # Claude Code local config
 .claude/

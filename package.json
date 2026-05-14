@@ -8,7 +8,15 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "eslint . --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "jest --passWithNoTests",
+    "prebuild": "expo prebuild --clean",
+    "build:ios": "cd ios && xcodebuild -workspace Readmigo.xcworkspace -scheme Readmigo -configuration Release -sdk iphoneos archive -archivePath build/Readmigo.xcarchive",
+    "build:android": "cd android && ./gradlew assembleRelease",
+    "codegen": "npx react-native codegen",
+    "pod-install": "cd ios && bundle exec pod install",
+    "ota:patch": "npx shorebird patch --platform=all",
+    "ota:release": "npx shorebird release --platform=all"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

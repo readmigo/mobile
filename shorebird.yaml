@@ -1,0 +1,30 @@
+# Shorebird OTA configuration
+# Enterprise alternative to EAS Update — self-hostable, no Expo dependency
+# Docs: https://docs.shorebird.dev
+
+app_id: com.readmigo.app
+
+# Patch channels (equivalent to EAS Update channels)
+channels:
+  - name: production
+    description: "Live users — stable patches only"
+  - name: staging
+    description: "Internal QA — pre-release patches"
+  - name: development
+    description: "Dev team — experimental patches"
+
+# Rollout strategy
+rollout:
+  # Staged rollout: 10% → 50% → 100%
+  stages:
+    - percentage: 10
+      min_duration_hours: 4
+    - percentage: 50
+      min_duration_hours: 12
+    - percentage: 100
+
+# Auto-rollback on crash spike
+auto_rollback:
+  enabled: true
+  crash_rate_threshold: 0.05  # 5% crash rate triggers rollback
+  evaluation_window_minutes: 30

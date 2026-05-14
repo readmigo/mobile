@@ -1,0 +1,7 @@
+app_identifier("com.readmigo.app")
+apple_id(ENV["FASTLANE_USER"])
+team_id(ENV["TEAM_ID"])
+
+for_platform :android do
+  package_name("com.readmigo.app")
+end

@@ -1,0 +1,119 @@
+default_platform(:ios)
+
+before_all do
+  ensure_git_status_clean
+end
+
+platform :ios do
+  desc "Build enterprise IPA (Ad Hoc / In-House distribution)"
+  lane :build_enterprise do
+    setup_ci if ENV['CI']
+
+    match(
+      type: "enterprise",
+      app_identifier: "com.readmigo.app",
+      readonly: true
+    )
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "ios/Readmigo.xcodeproj",
+      team_id: ENV["TEAM_ID"],
+      profile_name: ENV["sigh_com.readmigo.app_enterprise_profile-name"]
+    )
+
+    build_app(
+      workspace: "ios/Readmigo.xcworkspace",
+      scheme: "Readmigo",
+      configuration: "Release",
+      export_method: "enterprise",
+      output_directory: "ios/build",
+      output_name: "Readmigo.ipa",
+      clean: true,
+      xcargs: "-allowProvisioningUpdates"
+    )
+  end
+
+  desc "Distribute via MDM (enterprise in-house)"
+  lane :distribute_enterprise do
+    # Upload to internal MDM server (e.g., Jamf / AirWatch)
+    # For Tesla: likely internal distribution portal
+    sh("curl -X POST #{ENV['MDM_UPLOAD_URL']} " \
+       "-F 'file=@ios/build/Readmigo.ipa' " \
+       "-H 'Authorization: Bearer #{ENV['MDM_TOKEN']}'")
+  end
+
+  desc "Build for TestFlight (App Store distribution)"
+  lane :build_testflight do
+    setup_ci if ENV['CI']
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_KEY_ID"],
+      issuer_id: ENV["APP_STORE_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_KEY_PATH"]
+    )
+
+    match(
+      type: "appstore",
+      app_identifier: "com.readmigo.app",
+      readonly: true,
+      api_key: api_key
+    )
+
+    increment_build_number(
+      xcodeproj: "ios/Readmigo.xcodeproj",
+      build_number: ENV["BUILD_NUMBER"] || latest_testflight_build_number + 1
+    )
+
+    build_app(
+      workspace: "ios/Readmigo.xcworkspace",
+      scheme: "Readmigo",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "ios/build"
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true
+    )
+  end
+end
+
+platform :android do
+  desc "Build release APK"
+  lane :build_release do
+    gradle(
+      project_dir: "android",
+      task: "assembleRelease",
+      properties: {
+        "versionCode" => ENV["BUILD_NUMBER"] || "1",
+        "keystorePath" => ENV["ANDROID_KEYSTORE_PATH"],
+        "keystorePassword" => ENV["ANDROID_KEYSTORE_PASSWORD"],
+        "keyAlias" => ENV["ANDROID_KEY_ALIAS"],
+        "keyPassword" => ENV["ANDROID_KEY_PASSWORD"]
+      }
+    )
+  end
+
+  desc "Build release AAB (App Bundle for Play Store)"
+  lane :build_aab do
+    gradle(
+      project_dir: "android",
+      task: "bundleRelease",
+      properties: {
+        "versionCode" => ENV["BUILD_NUMBER"] || "1"
+      }
+    )
+  end
+
+  desc "Distribute APK to internal channel"
+  lane :distribute_internal do
+    # Upload to internal distribution (Firebase App Distribution / custom server)
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID_ANDROID"],
+      apk_path: "android/app/build/outputs/apk/release/app-release.apk",
+      groups: "internal-testers"
+    )
+  end
+end

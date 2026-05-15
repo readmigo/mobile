@@ -301,7 +301,6 @@ export default function AudiobookScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
-          estimatedItemSize={100}
           ListHeaderComponent={ListHeader}
           ItemSeparatorComponent={ItemSeparator}
           refreshControl={

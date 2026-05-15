@@ -19,11 +19,9 @@ import { useAuth } from '@/hooks/useAuth';
 import {
   signInWithApple,
   isAppleAuthAvailable,
-} from '@/features/auth/services/appleAuth';
-import {
   useGoogleAuth,
   parseGoogleResponse,
-} from '@/features/auth/services/googleAuth';
+} from '@/features/auth';
 
 const TERMS_URL = 'https://readmigo.app/terms';
 const PRIVACY_URL = 'https://readmigo.app/privacy';

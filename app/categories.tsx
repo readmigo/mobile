@@ -1,4 +1,4 @@
-import { CategoriesScreen } from '@/features/books/components/CategoriesScreen';
+import { CategoriesScreen } from '@/features/books';
 
 export default function CategoriesPage() {
   return <CategoriesScreen />;

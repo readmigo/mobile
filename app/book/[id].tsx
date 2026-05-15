@@ -5,7 +5,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
-import { useBookDetail } from '@/features/books/hooks';
+import { useBookDetail } from '@/features/books';
 import { useUserLibrary } from '@/features/library';
 import { booksApi } from '@/services/api/books';
 

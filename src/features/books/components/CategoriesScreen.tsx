@@ -12,7 +12,7 @@ import { Stack, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
-import { useCategories } from '@/features/books/hooks/useBooks';
+import { useCategories } from '../hooks/useBooks';
 import { getCategoryIcon } from '../categoryIcons';
 
 interface CategoryRowProps {

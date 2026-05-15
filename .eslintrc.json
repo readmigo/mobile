@@ -3,11 +3,28 @@
   "extends": ["eslint:recommended"],
   "env": {
     "es6": true,
-    "node": true
+    "node": true,
+    "browser": true
   },
   "parser": "@typescript-eslint/parser",
-  "rules": {
-    "no-unused-vars": "off"
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": { "jsx": true }
   },
-  "ignorePatterns": ["dist", "node_modules", "**/*"]
+  "globals": {
+    "__DEV__": "readonly",
+    "React": "readonly"
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "no-undef": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "jest.setup.js"],
+      "env": { "jest": true }
+    }
+  ],
+  "ignorePatterns": ["dist", "node_modules", "coverage", "ios", "android", "native-modules", ".expo"]
 }

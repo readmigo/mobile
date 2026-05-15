@@ -17,6 +17,7 @@ import { initAnalytics, identifyUser, resetUser, setSuperProperties, registerSup
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { registerForPushNotifications, setupNotificationListeners } from '@/services/notifications';
 import { checkForUpdate } from '@/services/versionCheck';
+import { ToastRoot } from '@/services/toast';
 
 // Initialize Sentry early
 initSentry();
@@ -142,6 +143,7 @@ function RootLayoutInner() {
           </ThemeProvider>
         </GestureHandlerRootView>
       </QueryClientProvider>
+      <ToastRoot />
     </SafeAreaProvider>
   );
 }

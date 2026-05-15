@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
-    "test": "jest",
+    "test": "jest --forceExit",
     "prebuild": "expo prebuild --clean",
     "build:ios": "cd ios && xcodebuild -workspace Readmigo.xcworkspace -scheme Readmigo -configuration Release -sdk iphoneos archive -archivePath build/Readmigo.xcarchive",
     "build:android": "cd android && ./gradlew assembleRelease",

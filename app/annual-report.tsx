@@ -1,7 +1,7 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { AnnualReportScreen } from '@/features/annual-report/components/AnnualReportScreen';
+import { AnnualReportScreen } from '@/features/annual-report';
 
 export default function AnnualReportPage() {
   const { colors } = useTheme();

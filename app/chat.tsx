@@ -1,7 +1,7 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { ChatScreen } from '@/features/messaging/components/ChatScreen';
+import { ChatScreen } from '@/features/messaging';
 
 export default function ChatPage() {
   const { colors } = useTheme();

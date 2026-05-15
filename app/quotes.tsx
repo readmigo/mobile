@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { QuotesScreen } from '@/features/quotes/components/QuotesScreen';
+import { QuotesScreen } from '@/features/quotes';
 
 export default function QuotesPage() {
   const { colors } = useTheme();

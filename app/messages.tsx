@@ -1,4 +1,4 @@
-import { MessageListScreen } from '@/features/messaging/components/MessageListScreen';
+import { MessageListScreen } from '@/features/messaging';
 
 export default function MessagesPage() {
   return <MessageListScreen />;

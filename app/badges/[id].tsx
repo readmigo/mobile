@@ -1,4 +1,4 @@
-import { BadgeDetailScreen } from '@/features/badges/components/BadgeDetailScreen';
+import { BadgeDetailScreen } from '@/features/badges';
 
 export default function BadgeDetailPage() {
   return <BadgeDetailScreen />;

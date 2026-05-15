@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { AgoraFeed } from '@/features/agora/components/AgoraFeed';
+import { AgoraFeed } from '@/features/agora';
 
 export default function AgoraPage() {
   const { colors } = useTheme();

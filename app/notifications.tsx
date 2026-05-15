@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { NotificationList } from '@/features/notifications/components/NotificationList';
+import { NotificationList } from '@/features/notifications';
 
 export default function NotificationsPage() {
   const { colors } = useTheme();

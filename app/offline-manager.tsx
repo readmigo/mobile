@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { OfflineManager } from '@/features/offline/components/OfflineManager';
+import { OfflineManager } from '@/features/offline';
 
 export default function OfflineManagerPage() {
   const { colors } = useTheme();

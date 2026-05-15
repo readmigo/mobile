@@ -1,4 +1,4 @@
-import { NewMessageScreen } from '@/features/messaging/components/NewMessageScreen';
+import { NewMessageScreen } from '@/features/messaging';
 
 export default function NewMessagePage() {
   return <NewMessageScreen />;

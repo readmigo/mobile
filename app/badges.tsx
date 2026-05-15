@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { BadgesScreen } from '@/features/badges/components/BadgesScreen';
+import { BadgesScreen } from '@/features/badges';
 
 export default function BadgesPage() {
   const { colors } = useTheme();

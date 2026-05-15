@@ -1,4 +1,4 @@
-import { BadgeLevelBenefitsScreen } from '@/features/badges/components/BadgeLevelBenefitsScreen';
+import { BadgeLevelBenefitsScreen } from '@/features/badges';
 
 export default function BadgeLevelsPage() {
   return <BadgeLevelBenefitsScreen />;

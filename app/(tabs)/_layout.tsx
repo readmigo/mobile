@@ -3,7 +3,7 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
-import { useUnreadCount } from '@/features/notifications/hooks/useNotifications';
+import { useUnreadCount } from '@/features/notifications';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 

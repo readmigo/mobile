@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { PostcardsScreen } from '@/features/postcards/components/PostcardsScreen';
+import { PostcardsScreen } from '@/features/postcards';
 
 export default function PostcardsPage() {
   const { colors } = useTheme();

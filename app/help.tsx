@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { HelpScreen } from '@/features/help/components/HelpScreen';
+import { HelpScreen } from '@/features/help';
 
 export default function HelpPage() {
   const { colors } = useTheme();

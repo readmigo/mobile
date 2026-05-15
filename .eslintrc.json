@@ -18,7 +18,20 @@
   },
   "rules": {
     "no-unused-vars": "off",
-    "no-undef": "off"
+    "no-undef": "off",
+    "no-restricted-imports": ["error", {
+      "patterns": [{
+        "group": [
+          "@/features/*/components/*",
+          "@/features/*/hooks/*",
+          "@/features/*/services/*",
+          "@/features/*/stores/*",
+          "@/features/*/types/*",
+          "@/features/*/theme/*"
+        ],
+        "message": "Import from the feature facade: @/features/<name>. See src/features/README.md"
+      }]
+    }]
   },
   "overrides": [
     {

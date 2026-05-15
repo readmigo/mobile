@@ -45,3 +45,7 @@ android/.gradle/
 
 # Claude Code local config
 .claude/
+
+# Test artifacts
+coverage/
+*.junit.xml

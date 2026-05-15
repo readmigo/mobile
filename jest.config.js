@@ -1,7 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
   preset: 'jest-expo',
-  setupFilesAfterEach: [],
   setupFiles: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -14,6 +13,7 @@ module.exports = {
     '**/__tests__/**/*.test.(ts|tsx)',
     '**/?(*.)+(spec|test).(ts|tsx)',
   ],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/native-modules/'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',

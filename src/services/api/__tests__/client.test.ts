@@ -78,3 +78,23 @@ describe('apiClient response interceptor', () => {
     expect(refreshMock.history.post.length).toBe(1);
   });
 });
+
+describe('apiClient response interceptor — retry', () => {
+  it('retries 503 up to 3 times then rejects', async () => {
+    apiMock.onGet('/me').reply(503);
+
+    await expect(apiClient.get('/me')).rejects.toBeDefined();
+
+    // Original + 3 retries = 4 calls
+    expect(apiMock.history.get.length).toBe(4);
+  }, 10_000);
+
+  it('retries network error then succeeds on retry', async () => {
+    apiMock.onGet('/me').networkErrorOnce().onGet('/me').replyOnce(200, { ok: true });
+
+    const res = await apiClient.get('/me');
+
+    expect(res.data).toEqual({ ok: true });
+    expect(apiMock.history.get.length).toBe(2);
+  }, 10_000);
+});

@@ -1,16 +1,28 @@
 import { QueryClient } from '@tanstack/react-query';
+import { handleApiError } from './api/errors';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 24 * 60 * 60 * 1000, // 24 hours (previously cacheTime)
-      retry: 2,
+      retry: (failureCount, error) => {
+        const appError = handleApiError(error);
+        if (!appError.isRetryable) return false;
+        return failureCount < 2;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
     },
     mutations: {
-      retry: 1,
+      retry: (failureCount, error) => {
+        const appError = handleApiError(error);
+        // Only retry NETWORK/TIMEOUT — don't retry SERVER (might double-write)
+        if (appError.code !== 'NETWORK' && appError.code !== 'TIMEOUT') return false;
+        return failureCount < 1;
+      },
+      retryDelay: 1000,
     },
   },
 });

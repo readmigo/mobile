@@ -6,6 +6,9 @@ import { useSettingsStore } from '@/stores/settingsStore';
 
 const BASE_URL = Constants.expoConfig?.extra?.apiUrl || 'https://api.readmigo.app';
 
+const MAX_RETRIES = 3;
+const BASE_RETRY_DELAY_MS = 500; // 500ms, 1s, 2s
+
 export const apiClient: AxiosInstance = axios.create({
   baseURL: `${BASE_URL}/api/v1`,
   timeout: 30000,
@@ -36,7 +39,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+      _retryCount?: number;
+    };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -61,6 +67,21 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         useAuthStore.getState().logout();
         return Promise.reject(refreshError);
+      }
+    }
+
+    const status = error.response?.status;
+    const isNetwork = !error.response;
+    const isServer = status !== undefined && status >= 500;
+    const isTimeout = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
+
+    if ((isNetwork || isServer || isTimeout) && error.code !== 'ERR_CANCELED') {
+      const retryCount = originalRequest._retryCount ?? 0;
+      if (retryCount < MAX_RETRIES) {
+        originalRequest._retryCount = retryCount + 1;
+        const delayMs = Math.pow(2, retryCount) * BASE_RETRY_DELAY_MS;
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        return apiClient(originalRequest);
       }
     }
 

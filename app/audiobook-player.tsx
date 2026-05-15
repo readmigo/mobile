@@ -17,9 +17,14 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '@/hooks/useTheme';
-import { useAudioPlayerStore, formatTime, formatDuration } from '@/features/audiobook/stores/audioPlayerStore';
-import { PLAYBACK_SPEEDS, SLEEP_TIMER_OPTIONS } from '@/features/audiobook/types';
-import type { PlaybackSpeed, SleepTimerOption } from '@/features/audiobook/types';
+import {
+  useAudioPlayerStore,
+  formatTime,
+  formatDuration,
+  PLAYBACK_SPEEDS,
+  SLEEP_TIMER_OPTIONS,
+} from '@/features/audiobook';
+import type { PlaybackSpeed, SleepTimerOption } from '@/features/audiobook';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const COVER_SIZE = SCREEN_WIDTH * 0.65;

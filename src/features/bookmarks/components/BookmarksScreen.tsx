@@ -15,11 +15,10 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
 import {
   useHighlightStore,
-  Bookmark,
-  Highlight,
   HIGHLIGHT_COLORS,
-} from '@/features/reader/stores/highlightStore';
-import { useUserLibrary } from '@/features/library/hooks/useLibrary';
+} from '@/features/reader';
+import type { Bookmark, Highlight } from '@/features/reader';
+import { useUserLibrary } from '@/features/library';
 
 type FilterKind = 'all' | 'bookmark' | 'highlight' | 'note';
 

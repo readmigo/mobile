@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
 import { useBookDetail } from '@/features/books/hooks';
-import { useUserLibrary } from '@/features/library/hooks/useLibrary';
+import { useUserLibrary } from '@/features/library';
 import { booksApi } from '@/services/api/books';
 
 export default function BookDetailScreen() {

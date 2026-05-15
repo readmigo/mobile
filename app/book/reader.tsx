@@ -11,17 +11,19 @@ import { Ionicons } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettingsStore } from '@/stores/settingsStore';
-import { EPUBReader } from '@/features/reader';
-import { ReaderControls } from '@/features/reader';
+import {
+  EPUBReader,
+  ReaderControls,
+  BookmarkPanel,
+  HighlightToolbar,
+  HighlightListPanel,
+  AutoPageControl,
+  getFocusModeJS,
+  useHighlightStore,
+  useReadingProgress,
+} from '@/features/reader';
+import type { FocusMode, BilingualMode } from '@/features/reader';
 import { AIExplanationPanel } from '@/features/ai';
-import { BookmarkPanel } from '@/features/reader/components/BookmarkPanel';
-import { HighlightToolbar } from '@/features/reader/components/HighlightToolbar';
-import { HighlightListPanel } from '@/features/reader/components/HighlightListPanel';
-import { AutoPageControl } from '@/features/reader/components/AutoPageControl';
-import { getFocusModeJS, type FocusMode } from '@/features/reader/components/FocusModeSelector';
-import type { BilingualMode } from '@/features/reader/components/BilingualToggle';
-import { useHighlightStore } from '@/features/reader/stores/highlightStore';
-import { useReadingProgress } from '@/features/reader/hooks/useReadingProgress';
 
 export default function ReaderScreen() {
   const { colors } = useTheme();

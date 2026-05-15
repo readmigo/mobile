@@ -16,10 +16,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
-import { useAudiobooks, useRecentlyPlayedAudiobooks } from '@/features/audiobook/hooks';
-import { useAudioPlayerStore, formatDuration } from '@/features/audiobook/stores/audioPlayerStore';
-import { audiobookApi } from '@/features/audiobook/services/audiobookApi';
-import type { AudiobookListItem } from '@/features/audiobook/types';
+import {
+  useAudiobooks,
+  useRecentlyPlayedAudiobooks,
+  useAudioPlayerStore,
+  formatDuration,
+  audiobookApi,
+} from '@/features/audiobook';
+import type { AudiobookListItem } from '@/features/audiobook';
 
 const LANGUAGES = [
   { key: 'all', label: 'All' },

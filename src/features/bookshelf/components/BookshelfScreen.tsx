@@ -13,7 +13,7 @@ import { UserBook } from '@/services/api/books';
 import {
   useUserLibrary,
   useRemoveFromLibrary,
-} from '@/features/library/hooks/useLibrary';
+} from '@/features/library';
 import { useBookshelfStore } from '../stores/bookshelfStore';
 import { BookshelfTopBar } from './BookshelfTopBar';
 import { BookshelfShelfView } from './BookshelfShelfView';

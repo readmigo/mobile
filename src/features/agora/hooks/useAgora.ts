@@ -1,6 +1,13 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { agoraApi } from '@/services/api/agora';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
 import { GetPostsParams, CreateCommentDto } from '@/types/agora';
+
+function onMutationError(err: unknown) {
+  const appError = handleApiError(err);
+  if (appError.isUserActionable) notifyError(appError);
+}
 
 export const agoraKeys = {
   all: ['agora'] as const,
@@ -41,6 +48,7 @@ export function useLikePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: agoraKeys.posts() });
     },
+    onError: onMutationError,
   });
 }
 
@@ -54,6 +62,7 @@ export function useCreateComment() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: agoraKeys.posts() });
     },
+    onError: onMutationError,
   });
 }
 
@@ -71,6 +80,7 @@ export function useLikeComment() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: agoraKeys.posts() });
     },
+    onError: onMutationError,
   });
 }
 
@@ -79,6 +89,7 @@ export function useSharePost() {
     mutationFn: async (postId: string) => {
       await agoraApi.sharePost(postId);
     },
+    onError: onMutationError,
   });
 }
 
@@ -92,6 +103,7 @@ export function useHidePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: agoraKeys.posts() });
     },
+    onError: onMutationError,
   });
 }
 
@@ -100,5 +112,6 @@ export function useReportPost() {
     mutationFn: async ({ postId, reason }: { postId: string; reason: string }) => {
       await agoraApi.reportPost(postId, reason);
     },
+    onError: onMutationError,
   });
 }

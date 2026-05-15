@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { aiApi, SavedWord } from '@/services/api/ai';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
 
 export function FlashcardReviewScreen() {
   const { colors } = useTheme();
@@ -23,6 +25,10 @@ export function FlashcardReviewScreen() {
     mutationFn: ({ wordId, level }: { wordId: string; level: number }) =>
       aiApi.updateWordMastery(wordId, level),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['vocabulary'] }),
+    onError: (err) => {
+      const appError = handleApiError(err);
+      if (appError.isUserActionable) notifyError(appError);
+    },
   });
 
   const currentWord = reviewWords?.[currentIndex];

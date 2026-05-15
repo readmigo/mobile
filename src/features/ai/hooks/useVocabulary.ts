@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { aiApi, SavedWord } from '@/services/api/ai';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
+
+function onMutationError(err: unknown) {
+  const appError = handleApiError(err);
+  if (appError.isUserActionable) notifyError(appError);
+}
 
 export const vocabularyKeys = {
   all: ['vocabulary'] as const,
@@ -41,6 +48,7 @@ export function useSaveVocabulary() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: vocabularyKeys.all });
     },
+    onError: onMutationError,
   });
 }
 
@@ -55,6 +63,7 @@ export function useDeleteVocabulary() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: vocabularyKeys.all });
     },
+    onError: onMutationError,
   });
 }
 
@@ -80,5 +89,6 @@ export function useUpdateMastery() {
       queryClient.invalidateQueries({ queryKey: vocabularyKeys.review() });
       queryClient.invalidateQueries({ queryKey: vocabularyKeys.lists() });
     },
+    onError: onMutationError,
   });
 }

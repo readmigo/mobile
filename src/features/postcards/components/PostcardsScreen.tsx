@@ -17,6 +17,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import { postcardsApi, PostcardTemplate, Postcard } from '@/services/api/postcards';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
 
 export function PostcardsScreen() {
   const { colors } = useTheme();
@@ -48,6 +50,10 @@ export function PostcardsScreen() {
       setCustomText('');
       setTab('gallery');
       Alert.alert(t('postcards.created', { defaultValue: 'Postcard Created!' }));
+    },
+    onError: (err) => {
+      const appError = handleApiError(err);
+      if (appError.isUserActionable) notifyError(appError);
     },
   });
 

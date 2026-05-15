@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationsApi } from '@/services/api/notifications';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
+
+function onMutationError(err: unknown) {
+  const appError = handleApiError(err);
+  if (appError.isUserActionable) notifyError(appError);
+}
 
 export const notificationKeys = {
   all: ['notifications'] as const,
@@ -35,6 +42,7 @@ export function useMarkAsRead() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notificationKeys.all });
     },
+    onError: onMutationError,
   });
 }
 
@@ -45,5 +53,6 @@ export function useMarkAllAsRead() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notificationKeys.all });
     },
+    onError: onMutationError,
   });
 }

@@ -2,6 +2,9 @@ import { useCallback } from 'react';
 import { File, Paths, Directory } from 'expo-file-system/next';
 import { booksApi } from '@/services/api/books';
 import { useOfflineStore, OfflineBook } from '../stores/offlineStore';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
+import { Sentry } from '@/services/crashTracking';
 
 const CACHE_DIR_NAME = 'offline-books';
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
@@ -60,7 +63,9 @@ export function useOfflineBook(bookId: string, bookTitle?: string) {
       });
     } catch (error) {
       setStatus(bookId, 'failed');
-      console.error('[Offline] Download failed:', error);
+      const appError = handleApiError(error);
+      if (appError.isUserActionable) notifyError(appError);
+      Sentry.captureException(error);
     }
   }, [bookId, bookTitle, setBook, setStatus]);
 
@@ -70,7 +75,9 @@ export function useOfflineBook(bookId: string, bookTitle?: string) {
       try {
         const file = new File(cachedBook.filePath);
         if (file.exists) file.delete();
-      } catch {}
+      } catch (err) {
+        Sentry.captureException(handleApiError(err));
+      }
     }
     removeBook(bookId);
   }, [bookId, removeBook]);
@@ -95,7 +102,9 @@ export function useOfflineManager() {
     try {
       const dir = getCacheDir();
       if (dir.exists) dir.delete();
-    } catch {}
+    } catch (err) {
+      Sentry.captureException(handleApiError(err));
+    }
     clearAll();
   }, [clearAll]);
 

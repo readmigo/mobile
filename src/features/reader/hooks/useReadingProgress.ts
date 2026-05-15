@@ -3,6 +3,8 @@ import { AppState, AppStateStatus } from 'react-native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { booksApi, ReadingProgress } from '@/services/api/books';
 import { queryKeys } from '@/services/queryClient';
+import { handleApiError } from '@/services/api/errors';
+import { Sentry } from '@/services/crashTracking';
 
 const AUTO_SAVE_INTERVAL = 30_000; // 30 seconds
 
@@ -21,6 +23,10 @@ export function useReadingProgress({ bookId, enabled = true }: UseReadingProgres
     onSuccess: () => {
       // Invalidate library queries so Library tab shows updated progress
       queryClient.invalidateQueries({ queryKey: queryKeys.library.books });
+    },
+    onError: (err) => {
+      // Auto-save: do not toast (user did not initiate). Log to Sentry only.
+      Sentry.captureException(handleApiError(err));
     },
   });
 

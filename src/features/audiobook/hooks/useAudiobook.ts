@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { audiobookApi, AudiobooksQueryParams } from '../services/audiobookApi';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import type { Audiobook } from '../types';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
 
 export const audiobookKeys = {
   all: ['audiobooks'] as const,
@@ -86,6 +88,10 @@ export function usePlayAudiobook() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: audiobookKeys.recentlyPlayed() });
+    },
+    onError: (err) => {
+      const appError = handleApiError(err);
+      if (appError.isUserActionable) notifyError(appError);
     },
   });
 }

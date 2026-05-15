@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
 import { apiClient } from '@/services/api/client';
 import { useMutation } from '@tanstack/react-query';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
 
 interface CollapsibleSectionProps {
   title: string;
@@ -72,6 +74,10 @@ export default function AuthorDetailScreen() {
       }
     },
     onSuccess: () => setIsFollowing(!isFollowing),
+    onError: (err) => {
+      const appError = handleApiError(err);
+      if (appError.isUserActionable) notifyError(appError);
+    },
   });
 
   // Mock author data

@@ -16,6 +16,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { messagingApi } from '@/services/api/messaging';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
 import { FeedbackCategory, FEEDBACK_CATEGORIES } from '../types';
 import { MessageTypePicker } from './MessageTypePicker';
 
@@ -54,14 +56,10 @@ export function NewMessageScreen() {
         params: { conversationId: conversation.id },
       });
     },
-    onError: (err: any) => {
-      const msg =
-        err.response?.data?.message ||
-        err.message ||
-        t('messaging.error.sendFailed', {
-          defaultValue: 'Failed to send message',
-        });
-      setError(msg);
+    onError: (err) => {
+      const appError = handleApiError(err);
+      if (appError.isUserActionable) notifyError(appError);
+      setError(appError.userMessage);
     },
   });
 

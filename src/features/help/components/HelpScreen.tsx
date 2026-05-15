@@ -14,6 +14,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import { faqApi, FAQItem } from '@/services/api/faq';
+import { handleApiError } from '@/services/api/errors';
+import { Sentry } from '@/services/crashTracking';
 
 export function HelpScreen() {
   const { colors } = useTheme();
@@ -60,7 +62,9 @@ export function HelpScreen() {
           try {
             await faqApi.submitFeedback({ subject: 'App Feedback', message: text.trim() });
             Alert.alert(t('help.thanks', { defaultValue: 'Thank You!' }), t('help.feedbackSent', { defaultValue: 'Your feedback has been sent.' }));
-          } catch {}
+          } catch (err) {
+            Sentry.captureException(handleApiError(err));
+          }
         }
       },
     );

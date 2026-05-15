@@ -14,6 +14,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import { devicesApi, UserDevice } from '@/services/api/devices';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
 
 const PLATFORM_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   ios: 'phone-portrait-outline',
@@ -34,6 +36,10 @@ export function DevicesScreen() {
   const { mutate: removeDevice } = useMutation({
     mutationFn: (id: string) => devicesApi.removeDevice(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['devices'] }),
+    onError: (err) => {
+      const appError = handleApiError(err);
+      if (appError.isUserActionable) notifyError(appError);
+    },
   });
 
   const handleRemove = useCallback(

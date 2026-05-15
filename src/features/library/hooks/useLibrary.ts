@@ -1,6 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { booksApi, UserBook } from '@/services/api/books';
 import { queryKeys } from '@/services/queryClient';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
+
+function onMutationError(err: unknown) {
+  const appError = handleApiError(err);
+  if (appError.isUserActionable) notifyError(appError);
+}
 
 export const libraryKeys = {
   ...queryKeys.library,
@@ -57,6 +64,7 @@ export function useToggleFavorite() {
       queryClient.invalidateQueries({ queryKey: libraryKeys.favorites });
       queryClient.invalidateQueries({ queryKey: libraryKeys.books });
     },
+    onError: onMutationError,
   });
 }
 
@@ -68,5 +76,6 @@ export function useRemoveFromLibrary() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: libraryKeys.all });
     },
+    onError: onMutationError,
   });
 }

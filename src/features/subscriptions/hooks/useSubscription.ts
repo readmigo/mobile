@@ -14,6 +14,13 @@ import {
 } from '../services/revenueCat';
 import { useSubscriptionStore } from '../stores/subscriptionStore';
 import { useAuthStore } from '@/stores/authStore';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
+
+function onMutationError(err: unknown) {
+  const appError = handleApiError(err);
+  if (appError.isUserActionable) notifyError(appError);
+}
 
 export const subscriptionKeys = {
   all: ['subscription'] as const,
@@ -90,6 +97,7 @@ export function usePurchase() {
       setSubscriptionInfo(info);
       queryClient.invalidateQueries({ queryKey: subscriptionKeys.info() });
     },
+    onError: onMutationError,
   });
 }
 
@@ -104,6 +112,7 @@ export function useRestorePurchases() {
       setSubscriptionInfo(info);
       queryClient.invalidateQueries({ queryKey: subscriptionKeys.info() });
     },
+    onError: onMutationError,
   });
 }
 

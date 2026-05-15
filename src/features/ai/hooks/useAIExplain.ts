@@ -8,6 +8,14 @@ import {
   TranslateRequest,
   TranslateResponse,
 } from '@/services/api/ai';
+import { handleApiError } from '@/services/api/errors';
+import { notifyError } from '@/services/toast';
+
+function onMutationError(err: unknown) {
+  const appError = handleApiError(err);
+  if (appError.isUserActionable) notifyError(appError);
+  return appError;
+}
 
 interface UseAIExplainOptions {
   onSuccess?: (data: ExplainResponse) => void;
@@ -24,7 +32,8 @@ export function useAIExplain(options?: UseAIExplainOptions) {
       options?.onSuccess?.(data);
     },
     onError: (error: Error) => {
-      options?.onError?.(error);
+      const appError = onMutationError(error);
+      options?.onError?.(appError);
     },
   });
 
@@ -56,7 +65,8 @@ export function useAITranslate(options?: UseAITranslateOptions) {
       options?.onSuccess?.(data);
     },
     onError: (error: Error) => {
-      options?.onError?.(error);
+      const appError = onMutationError(error);
+      options?.onError?.(appError);
     },
   });
 
@@ -88,7 +98,8 @@ export function useAISimplify(options?: UseAISimplifyOptions) {
       options?.onSuccess?.(data);
     },
     onError: (error: Error) => {
-      options?.onError?.(error);
+      const appError = onMutationError(error);
+      options?.onError?.(appError);
     },
   });
 
@@ -108,14 +119,17 @@ export function useAISimplify(options?: UseAISimplifyOptions) {
 export function useAIActions() {
   const explainMutation = useMutation({
     mutationFn: (request: ExplainRequest) => aiApi.explain(request).then(r => r.data),
+    onError: onMutationError,
   });
 
   const translateMutation = useMutation({
     mutationFn: (request: TranslateRequest) => aiApi.translate(request).then(r => r.data),
+    onError: onMutationError,
   });
 
   const simplifyMutation = useMutation({
     mutationFn: (request: SimplifyRequest) => aiApi.simplify(request).then(r => r.data),
+    onError: onMutationError,
   });
 
   return {

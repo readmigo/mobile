@@ -29,6 +29,10 @@ export function initSentry() {
     enableAutoSessionTracking: true,
     sessionTrackingIntervalMillis: 30000,
     maxBreadcrumbs: MAX_BREADCRUMBS,
+    integrations: [
+      Sentry.reactNativeTracingIntegration(),
+      Sentry.httpClientIntegration(),
+    ],
     beforeSend(event) {
       // PII filtering: remove email from user data
       if (event.user?.email) {

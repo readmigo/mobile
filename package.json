@@ -99,5 +99,8 @@
     "jest-junit": "^16.0.0",
     "typescript": "~5.9.2"
   },
-  "private": true
+  "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": ["@sentry/cli"]
+  }
 }

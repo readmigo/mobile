@@ -34,7 +34,7 @@ jobs:
       - run: pnpm typecheck
 
       - name: Test
-        run: pnpm test --ci --reporters=default --reporters=jest-junit
+        run: pnpm test -- --ci --reporters=default --reporters=jest-junit
 
       - name: Upload test results
         if: always()

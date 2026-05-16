@@ -141,6 +141,45 @@ export function trackOnboardingCompleted(props: {
   trackEvent('onboarding_completed', props);
 }
 
+// Auth Events
+export function trackLoginSucceeded(props: {
+  method: 'email' | 'google' | 'apple';
+}) {
+  trackEvent('login_succeeded', props);
+}
+
+export function trackSignupCompleted(props: {
+  method: 'email' | 'google' | 'apple';
+}) {
+  trackEvent('signup_completed', props);
+}
+
+// Book/Reader Events
+export function trackBookOpened(props: {
+  bookId: string;
+  bookTitle?: string;
+  source: 'discover' | 'library' | 'search' | 'series' | 'category' | 'deeplink';
+}) {
+  trackEvent('book_opened', props);
+}
+
+export function trackReadingSessionEnded(props: {
+  bookId: string;
+  durationSeconds: number;
+  finalProgress: number;
+}) {
+  trackEvent('reading_session_ended', props);
+}
+
+// Subscription Events
+export function trackSubscriptionPurchased(props: {
+  productId: string;
+  source: string;
+  isTrial?: boolean;
+}) {
+  trackEvent('subscription_purchased', props);
+}
+
 export function getPostHogClient(): PostHog | null {
   return posthogClient;
 }

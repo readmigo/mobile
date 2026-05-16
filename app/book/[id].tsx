@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -8,16 +8,28 @@ import { useTheme } from '@/hooks/useTheme';
 import { useBookDetail } from '@/features/books';
 import { useUserLibrary } from '@/features/library';
 import { booksApi } from '@/services/api/books';
+import { trackBookOpened } from '@/services/analytics';
 
 export default function BookDetailScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id: string; source?: string }>();
+  const { id } = params;
   const [chaptersExpanded, setChaptersExpanded] = useState(false);
   const [inLibrary, setInLibrary] = useState(false);
 
   const { data: bookDetail, isLoading } = useBookDetail(id || '');
   const { data: libraryBooks } = useUserLibrary();
+
+  useEffect(() => {
+    if (!bookDetail) return;
+    trackBookOpened({
+      bookId: bookDetail.id,
+      bookTitle: bookDetail.title,
+      source: (params.source as any) ?? 'discover',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookDetail?.id]);
 
   // Find user's progress for this book from library
   const userBook = libraryBooks?.find((ub) => ub.bookId === id);

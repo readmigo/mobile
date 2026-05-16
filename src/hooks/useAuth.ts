@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { authApi, LoginRequest, RegisterRequest, SocialLoginRequest } from '@/services/api/auth';
+import { trackLoginSucceeded, trackSignupCompleted } from '@/services/analytics';
 
 export function useAuth() {
   const {
@@ -22,6 +23,7 @@ export function useAuth() {
       const response = await authApi.login(data);
       setUser(response.data.user);
       setTokens(response.data.accessToken, response.data.refreshToken);
+      trackLoginSucceeded({ method: 'email' });
       return response.data;
     } finally {
       setLoading(false);
@@ -34,6 +36,7 @@ export function useAuth() {
       const response = await authApi.register(data);
       setUser(response.data.user);
       setTokens(response.data.accessToken, response.data.refreshToken);
+      trackSignupCompleted({ method: 'email' });
       return response.data;
     } finally {
       setLoading(false);
@@ -46,6 +49,9 @@ export function useAuth() {
       const response = await authApi.socialLogin(data);
       setUser(response.data.user);
       setTokens(response.data.accessToken, response.data.refreshToken);
+      const method: 'apple' | 'google' = data.provider === 'apple' ? 'apple' : 'google';
+      trackLoginSucceeded({ method });
+      // TODO: fire trackSignupCompleted for new social users (response shape lacks isNewUser field)
       return response.data;
     } finally {
       setLoading(false);

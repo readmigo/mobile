@@ -16,6 +16,7 @@ import { useSubscriptionStore } from '../stores/subscriptionStore';
 import { useAuthStore } from '@/stores/authStore';
 import { handleApiError } from '@/services/api/errors';
 import { notifyError } from '@/services/toast';
+import { trackSubscriptionPurchased } from '@/services/analytics';
 
 function onMutationError(err: unknown) {
   const appError = handleApiError(err);
@@ -92,7 +93,11 @@ export function usePurchase() {
       const customerInfo = await purchasePackage(pkg);
       return customerInfo;
     },
-    onSuccess: async () => {
+    onSuccess: async (_result, pkg) => {
+      trackSubscriptionPurchased({
+        productId: pkg?.product?.identifier ?? pkg?.identifier ?? '',
+        source: 'paywall',
+      });
       const info = await getSubscriptionInfo();
       setSubscriptionInfo(info);
       queryClient.invalidateQueries({ queryKey: subscriptionKeys.info() });

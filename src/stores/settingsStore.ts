@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { trackReaderSettingChanged } from '@/services/analytics';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type ReaderTheme = 'light' | 'dark' | 'sepia';
@@ -37,6 +38,22 @@ export const READER_THEME_COLORS = {
   sepia: { background: '#FAF2E3', text: '#4D3319', secondary: '#7A6652', link: '#3B6BA5' },
   dark: { background: '#1F1F1F', text: '#D9D9D9', secondary: '#999999', link: '#6BA3F7' },
 } as const;
+
+// Map reader-setting field names (camelCase) to snake_case analytics names.
+// Keys not in this map are intentionally not tracked.
+const READER_SETTING_EVENT_NAMES: Record<string, string> = {
+  readerTheme: 'reader_theme',
+  fontSize: 'font_size',
+  fontFamily: 'font_family',
+  lineSpacing: 'line_spacing',
+  textAlignment: 'text_alignment',
+  marginHorizontal: 'margin_horizontal',
+  letterSpacing: 'letter_spacing',
+  wordSpacing: 'word_spacing',
+  paragraphSpacing: 'paragraph_spacing',
+  fontWeight: 'font_weight',
+  hyphenation: 'hyphenation',
+};
 
 interface SettingsState {
   // App Settings
@@ -126,7 +143,19 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
         set({ language: lang });
       },
 
-      setReaderSettings: (settings) => set((state) => ({ ...state, ...settings })),
+      setReaderSettings: (settings) => {
+        set((state) => ({ ...state, ...settings }));
+        // Fire one analytics event per changed reader setting.
+        for (const [key, value] of Object.entries(settings)) {
+          if (value === undefined) continue;
+          const settingName = READER_SETTING_EVENT_NAMES[key];
+          if (!settingName) continue;
+          trackReaderSettingChanged({
+            setting: settingName,
+            value: value as string | number | boolean,
+          });
+        }
+      },
 
       setDailyGoal: (goal) => set({ dailyGoal: goal }),
 

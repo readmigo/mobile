@@ -13,6 +13,10 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettingsStore } from '@/stores/settingsStore';
+import {
+  trackOnboardingStepCompleted,
+  trackOnboardingCompleted,
+} from '@/services/analytics';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -93,6 +97,13 @@ const WELCOME_FEATURES = [
 
 const TOTAL_STEPS = 4;
 
+const STEP_NAMES: Record<number, string> = {
+  0: 'welcome',
+  1: 'level',
+  2: 'daily_goal',
+  3: 'interests',
+};
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -135,16 +146,38 @@ export default function OnboardingScreen() {
   }, [currentStep, runEntrance]);
 
   // ---- handlers ----
+  const stepSelection = (step: number): string | undefined => {
+    switch (step) {
+      case 1:
+        return selectedLevel ?? undefined;
+      case 2:
+        return String(selectedGoal);
+      case 3:
+        return Array.from(selectedInterests).join(',');
+      default:
+        return undefined;
+    }
+  };
+
   const handleContinue = () => {
+    // Always record completion of the step the user is leaving.
+    trackOnboardingStepCompleted({
+      step: currentStep,
+      stepName: STEP_NAMES[currentStep] ?? 'unknown',
+      selection: stepSelection(currentStep),
+    });
+
     if (currentStep < TOTAL_STEPS - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       // Save settings
       setDailyGoal(selectedGoal);
       // TODO: Persist level and interests to backend via API when available
-      console.log('[Onboarding] level:', selectedLevel);
-      console.log('[Onboarding] dailyGoal:', selectedGoal);
-      console.log('[Onboarding] interests:', [...selectedInterests]);
+      trackOnboardingCompleted({
+        level: selectedLevel ?? 'unknown',
+        dailyGoal: selectedGoal,
+        interestsCount: selectedInterests.size,
+      });
       router.replace('/(auth)/login');
     }
   };

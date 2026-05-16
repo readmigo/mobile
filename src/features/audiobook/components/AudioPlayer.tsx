@@ -165,7 +165,7 @@ export function AudioPlayer({ onClose }: AudioPlayerProps) {
 
         <TouchableOpacity
           style={styles.skipButton}
-          onPress={nextChapter}
+          onPress={() => nextChapter('manual')}
         >
           <Ionicons name="play-skip-forward" size={32} color="#fff" />
         </TouchableOpacity>

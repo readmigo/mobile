@@ -236,7 +236,7 @@ export default function AudiobookPlayerScreen() {
 
         <TouchableOpacity
           style={[styles.skipButton, isLastChapter && styles.buttonDisabled]}
-          onPress={nextChapter}
+          onPress={() => nextChapter('manual')}
           disabled={isLastChapter}
         >
           <Ionicons

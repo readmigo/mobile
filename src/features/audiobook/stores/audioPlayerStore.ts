@@ -4,6 +4,12 @@ import { immer } from 'zustand/middleware/immer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAudioService } from '../services/audioService';
 import { audiobookApi } from '../services/audiobookApi';
+import {
+  trackAudiobookSessionEnded,
+  trackAudiobookChapterChanged,
+  trackAudiobookSpeedChanged,
+  trackAudiobookLoadFailed,
+} from '@/services/analytics';
 import type {
   Audiobook,
   AudiobookChapter,
@@ -19,7 +25,7 @@ interface AudioPlayerActions {
   seek: (time: number) => Promise<void>;
   seekForward: (seconds?: number) => Promise<void>;
   seekBackward: (seconds?: number) => Promise<void>;
-  nextChapter: () => Promise<void>;
+  nextChapter: (trigger?: 'manual' | 'auto') => Promise<void>;
   previousChapter: () => Promise<void>;
   goToChapter: (index: number) => Promise<void>;
   setPlaybackSpeed: (speed: PlaybackSpeed) => Promise<void>;
@@ -27,7 +33,7 @@ interface AudioPlayerActions {
   setSleepTimer: (option: SleepTimerOption | null) => void;
   clearSleepTimer: () => void;
   loadAudiobook: (audiobook: Audiobook, startChapter?: number, startPosition?: number) => Promise<void>;
-  unloadAudiobook: () => Promise<void>;
+  unloadAudiobook: (reason?: string) => Promise<void>;
   minimize: () => void;
   maximize: () => void;
   hide: () => void;
@@ -165,7 +171,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
       },
 
       // Chapter navigation
-      nextChapter: async () => {
+      nextChapter: async (trigger: 'manual' | 'auto' = 'manual') => {
         const { audiobook, chapterIndex, playbackSpeed, sleepTimer } = get();
         if (!audiobook) return;
 
@@ -188,12 +194,20 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
           return;
         }
 
+        const fromChapter = chapterIndex;
         const nextChapter = audiobook.chapters[nextIndex];
         set((state) => {
           state.chapterIndex = nextIndex;
           state.currentChapter = nextChapter;
           state.currentTime = 0;
           state.isLoading = true;
+        });
+
+        trackAudiobookChapterChanged({
+          audiobookId: audiobook.id,
+          fromChapter,
+          toChapter: nextIndex,
+          trigger,
         });
 
         const audioService = getAudioService();
@@ -222,12 +236,20 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
         const prevIndex = chapterIndex - 1;
         if (prevIndex < 0) return;
 
+        const fromChapter = chapterIndex;
         const prevChapter = audiobook.chapters[prevIndex];
         set((state) => {
           state.chapterIndex = prevIndex;
           state.currentChapter = prevChapter;
           state.currentTime = 0;
           state.isLoading = true;
+        });
+
+        trackAudiobookChapterChanged({
+          audiobookId: audiobook.id,
+          fromChapter,
+          toChapter: prevIndex,
+          trigger: 'manual',
         });
 
         const audioService = getAudioService();
@@ -244,15 +266,23 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
       },
 
       goToChapter: async (index: number) => {
-        const { audiobook, playbackSpeed, isPlaying } = get();
+        const { audiobook, playbackSpeed, isPlaying, chapterIndex } = get();
         if (!audiobook || index < 0 || index >= audiobook.chapters.length) return;
 
+        const fromChapter = chapterIndex;
         const chapter = audiobook.chapters[index];
         set((state) => {
           state.chapterIndex = index;
           state.currentChapter = chapter;
           state.currentTime = 0;
           state.isLoading = true;
+        });
+
+        trackAudiobookChapterChanged({
+          audiobookId: audiobook.id,
+          fromChapter,
+          toChapter: index,
+          trigger: 'manual',
         });
 
         const audioService = getAudioService();
@@ -272,10 +302,16 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
 
       // Settings
       setPlaybackSpeed: async (speed: PlaybackSpeed) => {
+        const fromSpeed = get().playbackSpeed;
         const audioService = getAudioService();
         await audioService.setPlaybackSpeed(speed);
         set((state) => {
           state.playbackSpeed = speed;
+        });
+        trackAudiobookSpeedChanged({
+          audiobookId: get().audiobook?.id ?? '',
+          fromSpeed,
+          toSpeed: speed,
         });
       },
 
@@ -349,7 +385,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
         // Setup event listeners
         audioService.on('play', () => get().setPlaying(true));
         audioService.on('pause', () => get().setPlaying(false));
-        audioService.on('ended', () => get().nextChapter());
+        audioService.on('ended', () => get().nextChapter('auto'));
         audioService.on('loadstart', () => get().setLoading(true));
         audioService.on('canplay', () => get().setLoading(false));
         audioService.on('buffering', () => get().setBuffering(true));
@@ -373,14 +409,32 @@ export const useAudioPlayerStore = create<AudioPlayerStore>()(
             state.error = (error as Error).message;
             state.isLoading = false;
           });
+          trackAudiobookLoadFailed({
+            audiobookId: audiobook.id,
+            chapterIndex: startChapter ?? 0,
+            errorType: error instanceof Error ? error.name : 'Unknown',
+          });
         }
       },
 
-      unloadAudiobook: async () => {
+      unloadAudiobook: async (reason?: string) => {
         const audioService = getAudioService();
         await audioService.pause();
 
-        const audiobookId = get().audiobook?.id;
+        const stateBefore = get();
+        const audiobookId = stateBefore.audiobook?.id;
+
+        if (stateBefore.audiobook) {
+          trackAudiobookSessionEnded({
+            audiobookId: stateBefore.audiobook.id,
+            audiobookTitle: stateBefore.audiobook.title,
+            chapterIndex: stateBefore.chapterIndex,
+            positionSeconds: Math.floor(stateBefore.currentTime),
+            durationSeconds: Math.floor(stateBefore.duration),
+            playbackSpeed: stateBefore.playbackSpeed,
+            endReason: reason ?? 'manual',
+          });
+        }
 
         // Sync final progress before unloading
         await get().syncProgress();

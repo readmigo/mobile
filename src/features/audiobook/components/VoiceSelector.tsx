@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { ttsService } from '@/features/reader';
 import { CloudVoice } from '@/services/api/tts';
+import { trackTTSVoiceSelected } from '@/services/analytics';
 
 interface VoiceSelectorProps {
   selectedVoiceId?: string;
@@ -49,7 +50,14 @@ export function VoiceSelector({ selectedVoiceId, onSelectVoice, onClose }: Voice
                     borderColor: isSelected ? colors.primary : colors.border,
                   },
                 ]}
-                onPress={() => onSelectVoice(item)}
+                onPress={() => {
+                  trackTTSVoiceSelected({
+                    voiceType: item.quality,
+                    voiceId: item.voiceId,
+                    voiceName: item.displayName,
+                  });
+                  onSelectVoice(item);
+                }}
                 disabled={!item.available}
               >
                 <View style={styles.voiceInfo}>

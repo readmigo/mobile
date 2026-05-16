@@ -1,6 +1,7 @@
 {
   "root": true,
   "extends": ["eslint:recommended"],
+  "plugins": ["react-hooks"],
   "env": {
     "es6": true,
     "node": true,

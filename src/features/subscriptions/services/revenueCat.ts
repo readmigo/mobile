@@ -6,11 +6,12 @@ import Purchases, {
 } from 'react-native-purchases';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { reportError } from '@/services/crashTracking';
 
 const REVENUECAT_API_KEY_IOS = Constants.expoConfig?.extra?.revenueCatApiKeyIos || '';
 const REVENUECAT_API_KEY_ANDROID = Constants.expoConfig?.extra?.revenueCatApiKeyAndroid || '';
 
-export type SubscriptionTier = 'free' | 'premium' | 'premium_plus';
+export type SubscriptionTier = 'free' | 'pro';
 
 export interface SubscriptionInfo {
   tier: SubscriptionTier;
@@ -26,7 +27,7 @@ export interface SubscriptionPackage {
   description: string;
   price: string;
   pricePerMonth: string;
-  duration: 'monthly' | 'yearly' | 'lifetime';
+  duration: 'weekly' | 'monthly' | 'yearly';
   product: PurchasesPackage;
   isBestValue?: boolean;
 }
@@ -53,6 +54,10 @@ export async function initializeRevenueCat(userId?: string): Promise<void> {
 
     isInitialized = true;
   } catch (error) {
+    reportError(error instanceof Error ? error : new Error(String(error)), {
+      module: 'revenueCat',
+      phase: 'initialize',
+    });
     console.error('Failed to initialize RevenueCat:', error);
   }
 }
@@ -92,7 +97,18 @@ export async function getOfferings(): Promise<SubscriptionPackage[]> {
 function parseOffering(offering: PurchasesOffering): SubscriptionPackage[] {
   const packages: SubscriptionPackage[] = [];
 
-  // Monthly package
+  if (offering.weekly) {
+    packages.push({
+      id: offering.weekly.identifier,
+      title: 'Weekly',
+      description: 'Billed weekly',
+      price: offering.weekly.product.priceString,
+      pricePerMonth: `${offering.weekly.product.currencyCode} ${(offering.weekly.product.price * 52 / 12).toFixed(2)}/mo equiv.`,
+      duration: 'weekly',
+      product: offering.weekly,
+    });
+  }
+
   if (offering.monthly) {
     packages.push({
       id: offering.monthly.identifier,
@@ -105,7 +121,6 @@ function parseOffering(offering: PurchasesOffering): SubscriptionPackage[] {
     });
   }
 
-  // Yearly package
   if (offering.annual) {
     const yearlyPrice = offering.annual.product.price;
     const monthlyEquivalent = yearlyPrice / 12;
@@ -118,19 +133,6 @@ function parseOffering(offering: PurchasesOffering): SubscriptionPackage[] {
       duration: 'yearly',
       product: offering.annual,
       isBestValue: true,
-    });
-  }
-
-  // Lifetime package
-  if (offering.lifetime) {
-    packages.push({
-      id: offering.lifetime.identifier,
-      title: 'Lifetime',
-      description: 'One-time purchase',
-      price: offering.lifetime.product.priceString,
-      pricePerMonth: 'Forever',
-      duration: 'lifetime',
-      product: offering.lifetime,
     });
   }
 
@@ -168,26 +170,15 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
 }
 
 function parseCustomerInfo(customerInfo: CustomerInfo): SubscriptionInfo {
-  const premiumEntitlement = customerInfo.entitlements.active['premium'];
-  const premiumPlusEntitlement = customerInfo.entitlements.active['premium_plus'];
+  const proEntitlement = customerInfo.entitlements.active['pro'];
 
-  if (premiumPlusEntitlement) {
+  if (proEntitlement) {
     return {
-      tier: 'premium_plus',
+      tier: 'pro',
       isActive: true,
-      expirationDate: premiumPlusEntitlement.expirationDate,
-      willRenew: premiumPlusEntitlement.willRenew,
-      productId: premiumPlusEntitlement.productIdentifier,
-    };
-  }
-
-  if (premiumEntitlement) {
-    return {
-      tier: 'premium',
-      isActive: true,
-      expirationDate: premiumEntitlement.expirationDate,
-      willRenew: premiumEntitlement.willRenew,
-      productId: premiumEntitlement.productIdentifier,
+      expirationDate: proEntitlement.expirationDate,
+      willRenew: proEntitlement.willRenew,
+      productId: proEntitlement.productIdentifier,
     };
   }
 
@@ -205,6 +196,6 @@ export function addCustomerInfoUpdateListener(
 ): () => void {
   Purchases.addCustomerInfoUpdateListener(callback);
   return () => {
-    // RevenueCat doesn't have a remove listener, but we can return a no-op
+    Purchases.removeCustomerInfoUpdateListener(callback);
   };
 }

@@ -66,27 +66,24 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
 // Feature flags based on subscription tier
 export const useSubscriptionFeatures = () => {
   const { tier, isActive } = useSubscriptionStore();
+  const isPro = tier === 'pro' && isActive;
 
   return {
-    // Free tier features
     canAccessLibrary: true,
     canReadBooks: true,
-    maxBooksInLibrary: tier === 'free' ? 3 : Infinity,
+    maxBooksInLibrary: isPro ? Infinity : 3,
 
-    // Premium features
-    canUseAI: tier !== 'free' && isActive,
-    canSaveVocabulary: tier !== 'free' && isActive,
-    canUseFlashcards: tier !== 'free' && isActive,
-    canListenAudiobooks: tier !== 'free' && isActive,
-    hasUnlimitedBooks: tier !== 'free' && isActive,
+    canUseAI: isPro,
+    canSaveVocabulary: isPro,
+    canUseFlashcards: isPro,
+    canListenAudiobooks: isPro,
+    hasUnlimitedBooks: isPro,
+    canAccessPremiumContent: isPro,
+    hasOfflineMode: isPro,
+    hasPrioritySupport: isPro,
 
-    // Premium Plus features
-    canAccessPremiumContent: tier === 'premium_plus' && isActive,
-    hasOfflineMode: tier === 'premium_plus' && isActive,
-    hasPrioritySupport: tier === 'premium_plus' && isActive,
-
-    // Computed
-    isPremium: tier !== 'free' && isActive,
-    isPremiumPlus: tier === 'premium_plus' && isActive,
+    isPro,
+    /** @deprecated use isPro */
+    isPremium: isPro,
   };
 };

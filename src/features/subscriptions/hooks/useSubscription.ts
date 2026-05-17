@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { Linking, Platform } from 'react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PurchasesPackage } from 'react-native-purchases';
 import {
@@ -34,6 +35,9 @@ export function useInitializeSubscription() {
   const { setSubscriptionInfo, setLoading } = useSubscriptionStore();
 
   useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
     const init = async () => {
       setLoading(true);
       try {
@@ -44,21 +48,26 @@ export function useInitializeSubscription() {
         }
 
         const info = await getSubscriptionInfo();
+        if (cancelled) return;
         setSubscriptionInfo(info);
 
-        // Listen for subscription updates
-        addCustomerInfoUpdateListener(async () => {
+        unsubscribe = addCustomerInfoUpdateListener(async () => {
           const updatedInfo = await getSubscriptionInfo();
           setSubscriptionInfo(updatedInfo);
         });
       } catch (error) {
         console.error('Failed to initialize subscription:', error);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     init();
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, [user?.id, isAuthenticated]);
 }
 
@@ -102,7 +111,12 @@ export function usePurchase() {
       setSubscriptionInfo(info);
       queryClient.invalidateQueries({ queryKey: subscriptionKeys.info() });
     },
-    onError: onMutationError,
+    onError: (err: unknown) => {
+      if ((err as { userCancelled?: boolean })?.userCancelled === true) {
+        return;
+      }
+      onMutationError(err);
+    },
   });
 }
 
@@ -128,4 +142,13 @@ export function useLogoutSubscription() {
     await logoutUser();
     reset();
   }, [reset]);
+}
+
+export function useManageSubscription() {
+  return useCallback(() => {
+    const url = Platform.OS === 'ios'
+      ? 'https://apps.apple.com/account/subscriptions'
+      : 'https://play.google.com/store/account/subscriptions';
+    return Linking.openURL(url);
+  }, []);
 }

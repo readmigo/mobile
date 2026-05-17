@@ -20,6 +20,10 @@
       },
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EAS_PUBLIC_REVENUECAT_IOS": "$EAS_PUBLIC_REVENUECAT_IOS",
+        "EAS_PUBLIC_REVENUECAT_ANDROID": "$EAS_PUBLIC_REVENUECAT_ANDROID"
       }
     },
     "production": {
@@ -29,6 +33,10 @@
       "android": {
         "autoIncrement": true,
         "buildType": "app-bundle"
+      },
+      "env": {
+        "EAS_PUBLIC_REVENUECAT_IOS": "$EAS_PUBLIC_REVENUECAT_IOS",
+        "EAS_PUBLIC_REVENUECAT_ANDROID": "$EAS_PUBLIC_REVENUECAT_ANDROID"
       }
     }
   },

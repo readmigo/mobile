@@ -36,10 +36,9 @@ export function PaywallScreen() {
     try {
       await purchase.mutateAsync(selectedPackage.product);
       router.back();
-    } catch (error: any) {
-      if (!error.userCancelled) {
-        console.error('Purchase failed:', error);
-      }
+    } catch {
+      // usePurchase.onError handles user-cancelled silencing and toast for other errors;
+      // this catch only exists to prevent unhandled promise rejection.
     }
   };
 
@@ -127,7 +126,7 @@ export function PaywallScreen() {
                 <Text style={[styles.packageDesc, { color: colors.textSecondary }]}>
                   {pkg.description}
                 </Text>
-                {pkg.duration !== 'monthly' && pkg.duration !== 'lifetime' && (
+                {pkg.duration !== 'monthly' && (
                   <Text style={[styles.packagePerMonth, { color: colors.textTertiary }]}>
                     {pkg.pricePerMonth}
                   </Text>

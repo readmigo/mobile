@@ -16,9 +16,13 @@ export interface OfflineBook {
   progress: number; // 0-1
 }
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+const DEFAULT_MAX_CACHE_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB
+
 interface OfflineState {
   books: Record<string, OfflineBook>;
   downloadQueue: string[]; // bookIds
+  maxCacheBytes?: number;
 }
 
 interface OfflineActions {
@@ -31,17 +35,20 @@ interface OfflineActions {
   getBook: (bookId: string) => OfflineBook | undefined;
   isDownloaded: (bookId: string) => boolean;
   getTotalCacheSize: () => number;
+  getMaxCacheBytes: () => number;
+  setMaxCacheBytes: (bytes: number) => void;
+  /** Evicts oldest completed books until total size is under maxCacheBytes. Returns evicted bookIds so the caller can delete files. */
+  enforceLimit: () => string[];
   clearExpired: () => void;
   clearAll: () => void;
 }
-
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 export const useOfflineStore = create<OfflineState & OfflineActions>()(
   persist(
     immer((set, get) => ({
       books: {},
       downloadQueue: [],
+      maxCacheBytes: DEFAULT_MAX_CACHE_BYTES,
 
       setBook: (book) =>
         set((state) => {
@@ -91,6 +98,36 @@ export const useOfflineStore = create<OfflineState & OfflineActions>()(
       getTotalCacheSize: () =>
         Object.values(get().books).reduce((sum, b) => sum + (b.fileSize || 0), 0),
 
+      getMaxCacheBytes: () => get().maxCacheBytes ?? DEFAULT_MAX_CACHE_BYTES,
+
+      setMaxCacheBytes: (bytes) =>
+        set((state) => {
+          state.maxCacheBytes = bytes;
+        }),
+
+      enforceLimit: () => {
+        const limit = get().maxCacheBytes ?? DEFAULT_MAX_CACHE_BYTES;
+        const completed = Object.values(get().books)
+          .filter((b) => b.status === 'completed')
+          .sort((a, b) => new Date(a.downloadedAt).getTime() - new Date(b.downloadedAt).getTime());
+        let total = completed.reduce((sum, b) => sum + (b.fileSize || 0), 0);
+        const evicted: string[] = [];
+        for (const book of completed) {
+          if (total <= limit) break;
+          evicted.push(book.bookId);
+          total -= book.fileSize || 0;
+        }
+        if (evicted.length > 0) {
+          set((state) => {
+            for (const id of evicted) {
+              delete state.books[id];
+              state.downloadQueue = state.downloadQueue.filter((q) => q !== id);
+            }
+          });
+        }
+        return evicted;
+      },
+
       clearExpired: () =>
         set((state) => {
           const now = Date.now();
@@ -113,3 +150,5 @@ export const useOfflineStore = create<OfflineState & OfflineActions>()(
     },
   ),
 );
+
+export { DEFAULT_MAX_CACHE_BYTES, THIRTY_DAYS_MS };

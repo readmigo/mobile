@@ -37,7 +37,10 @@
   "overrides": [
     {
       "files": ["**/__tests__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "jest.setup.js"],
-      "env": { "jest": true }
+      "env": { "jest": true },
+      "rules": {
+        "no-restricted-imports": "off"
+      }
     }
   ],
   "ignorePatterns": ["dist", "node_modules", "coverage", "ios", "android", "native-modules", ".expo"]

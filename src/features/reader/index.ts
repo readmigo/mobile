@@ -19,7 +19,9 @@ export {
 } from './stores/highlightStore';
 export type {
   Bookmark,
+  BookmarkInput,
   Highlight,
+  HighlightInput,
   HighlightColor,
   HighlightStyle,
 } from './stores/highlightStore';

@@ -26,6 +26,14 @@ jest.mock('react-native-reanimated', () =>
   require('react-native-reanimated/mock')
 );
 
+jest.mock('@react-native-community/netinfo', () =>
+  require('@react-native-community/netinfo/jest/netinfo-mock.js')
+);
+
+jest.mock('react-native-webview', () => ({
+  WebView: 'WebView',
+}));
+
 jest.mock('react-native-purchases', () => {
   const emptyCustomerInfo = {
     entitlements: { active: {}, all: {} },

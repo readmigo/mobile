@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { Stack } from 'expo-router';
 import { ThemeProvider } from '@react-navigation/native';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -18,6 +19,9 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { registerForPushNotifications, setupNotificationListeners } from '@/services/notifications';
 import { checkForUpdate } from '@/services/versionCheck';
 import { ToastRoot } from '@/services/toast';
+import { useOfflineStore } from '@/features/offline';
+import { syncEngine } from '@/features/sync';
+import { onOnline } from '@/services/network';
 
 // Initialize Sentry early
 initSentry();
@@ -37,6 +41,11 @@ function RootLayoutInner() {
       setSuperProperties();
     });
     checkForUpdate();
+    try {
+      useOfflineStore.getState().clearExpired();
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }, []);
 
   // Initialize push notifications & listeners
@@ -46,6 +55,34 @@ function RootLayoutInner() {
     }
     const cleanup = setupNotificationListeners();
     return cleanup;
+  }, [isAuthenticated]);
+
+  // Annotations sync: pull-on-login, push-on-online, push-on-foreground (debounced 5min)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    // Initial pull, deferred so it doesn't block first paint.
+    const pullTimer = setTimeout(() => {
+      syncEngine.pullAll().catch((err) => Sentry.captureException(err));
+    }, 0);
+
+    const unsubOnline = onOnline(() => {
+      syncEngine.pushDirty().catch((err) => Sentry.captureException(err));
+    });
+
+    const FIVE_MIN_MS = 5 * 60 * 1000;
+    const onAppStateChange = (next: AppStateStatus) => {
+      if (next === 'active' && syncEngine.msSinceLastSync() > FIVE_MIN_MS) {
+        syncEngine.pushDirty().catch((err) => Sentry.captureException(err));
+      }
+    };
+    const sub = AppState.addEventListener('change', onAppStateChange);
+
+    return () => {
+      clearTimeout(pullTimer);
+      unsubOnline();
+      sub.remove();
+    };
   }, [isAuthenticated]);
 
   // Sync user with Sentry & PostHog

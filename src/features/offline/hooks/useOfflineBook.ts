@@ -61,6 +61,17 @@ export function useOfflineBook(bookId: string, bookTitle?: string) {
         status: 'completed',
         progress: 1,
       });
+
+      // Evict oldest downloads if total cache exceeds limit; delete their files from disk.
+      const evicted = useOfflineStore.getState().enforceLimit();
+      for (const evictedId of evicted) {
+        try {
+          const evictedFile = new File(getCacheDir(), `${evictedId}.epub`);
+          if (evictedFile.exists) evictedFile.delete();
+        } catch (err) {
+          Sentry.captureException(err);
+        }
+      }
     } catch (error) {
       setStatus(bookId, 'failed');
       const appError = handleApiError(error);
